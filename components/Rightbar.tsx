@@ -17,7 +17,7 @@ export default function Rightbar() {
     useEffect(() => {
         const fetchSuggestions = async () => {
             try {
-                const res = await fetch("/api/users/suggestions", {
+                const res = await fetch("/api/user/suggestions", {
                     credentials: "include",
                 });
                 if (res.ok) {
