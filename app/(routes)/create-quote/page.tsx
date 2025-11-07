@@ -2,6 +2,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { FaImage } from "react-icons/fa";
 
 const page = () => {
   const router = useRouter()
@@ -96,7 +97,7 @@ const page = () => {
             htmlFor="image-upload"
             className="flex items-center gap-2 bg-[#1d9bf0] hover:bg-[#0d8ae8] text-white px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition"
           >
-            <Image src="/icons/image.svg" alt="Upload" width={20} height={20} />
+            <FaImage className="w-5 h-5" />
             Upload Image
           </label>
           <input

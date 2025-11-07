@@ -5,6 +5,8 @@ import NavItem from "./NavItem";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FiHome, FiSearch, FiBell, FiMail, FiUser, FiSettings, FiPlus } from "react-icons/fi"
+import { FaHome, FaSearch, FaBell, FaEnvelope, FaUser, FaCog } from "react-icons/fa"
 
 export default function Sidebar() {
   const route = usePathname();
@@ -26,12 +28,12 @@ export default function Sidebar() {
         setUser(fetchedUser);
 
         setNavItems([
-          { icon: "/icons/house", label: "Home", href: "/", showOnMobile: true },
-          { icon: "/icons/search", label: "Explore", href: "/explore", showOnMobile: true },
-          { icon: "/icons/bell", label: "Notifications", href: "/notifications", showOnMobile: true },
-          { icon: "/icons/mail", label: "Messages", href: "/messages", showOnMobile: true },
-          { icon: "/icons/person", label: "Profile", href: `/profile/${fetchedUser.handle}`, showOnMobile: true },
-          { icon: "/icons/settings", label: "Settings", href: "/settings", showOnMobile: false },
+          { label: "Home", href: "/", showOnMobile: true, icon: FaHome, ActiveIcon: FiHome },
+          { label: "Explore", href: "/explore", showOnMobile: true , icon: FaSearch, ActiveIcon: FiSearch},
+          { label: "Notifications", href: "/notifications", showOnMobile: true , icon: FaBell, ActiveIcon: FiBell},
+          { label: "Messages", href: "/messages", showOnMobile: true , icon: FaEnvelope, ActiveIcon: FiMail},
+          { label: "Profile", href: `/profile/${fetchedUser.handle}`, showOnMobile: true , icon: FaUser, ActiveIcon: FiUser},
+          { label: "Settings", href: "/settings", showOnMobile: false , icon: FaCog, ActiveIcon: FiSettings},
         ]);
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -52,10 +54,10 @@ export default function Sidebar() {
           </div>
 
           <nav className="space-y-2">
-            {navItems.map(({ icon, label, href }) => (
+            {navItems.map(({ icon: Icon, label, href, ActiveIcon }) => (
               <NavItem
                 key={label}
-                icon={route === href || (href !== "/" && route.startsWith(href)) ? `${icon}-fill.svg` : `${icon}.svg`}
+                icon={route === href || (href !== "/" && route.startsWith(href)) ? <Icon size={24} /> : <ActiveIcon size={24} />}
                 label={label}
                 href={href}
               />
@@ -114,24 +116,14 @@ export default function Sidebar() {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center justify-around py-2">
-          {navItems
-            .filter((item) => item.showOnMobile !== false)
-            .map(({ icon, label, href }) => {
-              const isActive = route === href || (href !== "/" && route.startsWith(href));
-              const iconSrc = isActive ? `${icon}-fill.svg` : `${icon}.svg`;
-
-              return (
-                <Link
-                  key={label}
-                  href={href}
-                  className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition ${
-                    isActive ? "text-white" : "text-gray-500"
-                  }`}
+          {navItems.filter((item) => item.showOnMobile !== false).map(({ icon: Icon, label, href, ActiveIcon }) => (
+              <Link
+                key={label}
+                href={href}
                 >
-                  <Image src={iconSrc} alt={label} width={24} height={24} />
+                  {route === href || (href !== "/" && route.startsWith(href)) ? <Icon size={24} /> : <ActiveIcon size={24} />}
                 </Link>
-              );
-            })}
+            ))}
         </div>
       </nav>
 
@@ -142,16 +134,7 @@ export default function Sidebar() {
           className="md:hidden fixed bottom-16 right-4 bg-white text-black rounded-full w-12 h-12 flex items-center justify-center shadow-lg z-30"
           aria-label="Create Quote"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
+          <FiPlus className="w-6 h-6" />
         </Link>
       )}
     </>
