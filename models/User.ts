@@ -69,6 +69,16 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  secretWord1: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  secretWord2: {
+    type: String,
+    required: true,
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
