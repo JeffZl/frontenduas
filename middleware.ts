@@ -14,14 +14,14 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("session_token")?.value;
 
   if (!token) {
-    return NextResponse.redirect(new URL("/sign-in", req.url));
+    return NextResponse.redirect(new URL("/landing-page", req.url));
   }
 
   try {
     const decoded = jwt.verify(token, SECRET);
     return NextResponse.next();
   } catch (err) {
-    return NextResponse.redirect(new URL("/sign-in", req.url));
+    return NextResponse.redirect(new URL("/landing-page", req.url));
   }
 }
 
