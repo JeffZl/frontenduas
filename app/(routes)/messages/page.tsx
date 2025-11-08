@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
+import { FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
 
 interface Conversation {
@@ -292,35 +293,22 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex h-screen bg-black text-white relative">
+    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white relative">
       {/* main section buat list conversation */}
       <div
         className={`${
           showConversationsList ? "flex" : "hidden"
-        } md:flex w-full md:w-96 border-r border-[#2f3336] flex-col absolute md:relative inset-0 z-10 md:z-auto bg-black`}
+        } md:flex w-full md:w-96 border-r border-gray-300 dark:border-[#2f3336] flex-col absolute md:relative inset-0 z-10 md:z-auto bg-white dark:bg-black`}
       >
-        <div className="p-4 border-b border-[#2f3336]">
+        <div className="p-4 border-b border-gray-300 dark:border-[#2f3336]">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold">Messages</h1>
+            <h1 className="text-xl font-bold text-black dark:text-white">Messages</h1>
             <button
               onClick={() => setShowSearch(!showSearch)}
-              className="text-white bg-[#202327] hover:bg-[#2f3336] rounded-full p-2 transition"
+              className="text-black dark:text-white bg-gray-100 dark:bg-[#202327] hover:bg-gray-200 dark:hover:bg-[#2f3336] rounded-full p-2 transition"
               title="Search users"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
+              <FiSearch className="w-5 h-5" />
             </button>
           </div>
           {showSearch && (
@@ -330,7 +318,7 @@ export default function MessagesPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search users by name or handle..."
-                className="w-full bg-[#202327] text-white px-4 py-2 rounded-full outline-none placeholder-gray-500 text-sm"
+                className="w-full bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm"
                 autoFocus
               />
             </div>
@@ -339,21 +327,21 @@ export default function MessagesPage() {
 
         {/* Search Results */}
         {showSearch && searchQuery && (
-          <div className="border-b border-[#2f3336] max-h-96 overflow-y-auto">
+          <div className="border-b border-gray-300 dark:border-[#2f3336] max-h-96 overflow-y-auto">
             {searching ? (
               <div className="p-4 space-y-3">
                 {[1, 2].map((i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-700 rounded-full animate-pulse" />
+                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
                     <div className="flex-1">
-                      <div className="w-24 h-4 bg-gray-700 rounded animate-pulse mb-2" />
-                      <div className="w-32 h-3 bg-gray-700 rounded animate-pulse" />
+                      <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                      <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : searchResults.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p className="text-sm">No users found</p>
               </div>
             ) : (
@@ -368,7 +356,7 @@ export default function MessagesPage() {
                         setShowConversationsList(false)
                       }
                     }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-[#0f0f0f] rounded-lg transition"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] rounded-lg transition"
                   >
                     {user.profilePicture?.url ? (
                       <Image
@@ -379,17 +367,17 @@ export default function MessagesPage() {
                         className="rounded-full object-cover shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 shrink-0">
-                        <span className="text-white font-bold text-sm">
+                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
+                        <span className="text-black dark:text-white font-bold text-sm">
                           {getInitial(user.name)}
                         </span>
                       </div>
                     )}
                     <div className="flex-1 min-w-0 text-left">
-                      <div className="font-bold truncate">{user.name}</div>
-                      <div className="text-sm text-gray-500 truncate">@{user.handle}</div>
+                      <div className="font-bold truncate text-black dark:text-white">{user.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate">@{user.handle}</div>
                       {user.bio && (
-                        <div className="text-xs text-gray-600 truncate mt-1">{user.bio}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-500 truncate mt-1">{user.bio}</div>
                       )}
                     </div>
                     <svg
@@ -398,7 +386,7 @@ export default function MessagesPage() {
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="w-5 h-5 text-gray-500"
+                      className="w-5 h-5 text-gray-500 dark:text-gray-400"
                     >
                       <path
                         strokeLinecap="round"
@@ -418,16 +406,16 @@ export default function MessagesPage() {
             <div className="p-4 space-y-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex items-center gap-3 p-3">
-                  <div className="w-12 h-12 bg-gray-700 rounded-full animate-pulse" />
+                  <div className="w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
                   <div className="flex-1">
-                    <div className="w-24 h-4 bg-gray-700 rounded animate-pulse mb-2" />
-                    <div className="w-32 h-3 bg-gray-700 rounded animate-pulse" />
+                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                    <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
                   </div>
                 </div>
               ))}
             </div>
           ) : conversations.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <p>No conversations yet</p>
               <p className="text-sm mt-2">Start a conversation from a user's profile</p>
             </div>
@@ -442,8 +430,8 @@ export default function MessagesPage() {
                     setShowConversationsList(false)
                   }
                 }}
-                className={`w-full flex items-center gap-3 p-3 md:p-4 hover:bg-[#0f0f0f] transition ${
-                  selectedConversation?._id === conv._id ? "bg-[#0f0f0f]" : ""
+                className={`w-full flex items-center gap-3 p-3 md:p-4 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] transition ${
+                  selectedConversation?._id === conv._id ? "bg-gray-100 dark:bg-[#0f0f0f]" : ""
                 }`}
               >
                 {conv.participant.profilePicture?.url ? (
@@ -455,29 +443,29 @@ export default function MessagesPage() {
                     className="rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-700 shrink-0">
-                    <span className="text-white font-bold text-lg">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
+                    <span className="text-black dark:text-white font-bold text-lg">
                       {getInitial(conv.participant.name)}
                     </span>
                   </div>
                 )}
                 <div className="flex-1 min-w-0 text-left">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold truncate">{conv.participant.name}</span>
+                    <span className="font-bold truncate text-black dark:text-white">{conv.participant.name}</span>
                     {conv.lastMessage && (
-                      <span className="text-xs text-gray-500 ml-2 shrink-0">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0">
                         {formatTime(conv.lastMessageAt)}
                       </span>
                     )}
                   </div>
                   {conv.lastMessage ? (
-                    <p className="text-sm text-gray-500 truncate">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                       {conv.lastMessage.sender.handle === currentUser?.handle
                         ? `You: ${conv.lastMessage.content}`
                         : conv.lastMessage.content}
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500">No messages yet</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">No messages yet</p>
                   )}
                 </div>
               </button>
@@ -491,14 +479,14 @@ export default function MessagesPage() {
         {selectedConversation ? (
           <>
             {/* header conversation */}
-            <div className="p-3 md:p-4 border-b border-[#2f3336] flex items-center gap-3">
+            <div className="p-3 md:p-4 border-b border-gray-300 dark:border-[#2f3336] flex items-center gap-3 bg-white dark:bg-black">
               {/* button buat balik di mobile */}
               <button
                 onClick={() => {
                   setSelectedConversation(null)
                   setShowConversationsList(true)
                 }}
-                className="md:hidden text-white hover:bg-[#2f3336] rounded-full p-2 transition -ml-2"
+                className="md:hidden text-black dark:text-white hover:bg-gray-100 dark:hover:bg-[#2f3336] rounded-full p-2 transition -ml-2"
                 aria-label="Back to conversations"
               >
                 <IoMdArrowBack className="w-5 h-5" />
@@ -512,20 +500,20 @@ export default function MessagesPage() {
                   className="rounded-full object-cover"
                 />
               ) : (
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700">
-                  <span className="text-white font-bold">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
+                  <span className="text-black dark:text-white font-bold">
                     {getInitial(selectedConversation.participant.name)}
                   </span>
                 </div>
               )}
               <div>
-                <h2 className="font-bold">{selectedConversation.participant.name}</h2>
-                <p className="text-sm text-gray-500">@{selectedConversation.participant.handle}</p>
+                <h2 className="font-bold text-black dark:text-white">{selectedConversation.participant.name}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">@{selectedConversation.participant.handle}</p>
               </div>
             </div>
 
             {/* section message sesama user */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 pb-24 md:pb-4">
+            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 pb-24 md:pb-4 bg-white dark:bg-black">
               {messages.map((message) => {
                 const isOwnMessage = message.sender._id === currentUser?._id
                 return (
@@ -544,8 +532,8 @@ export default function MessagesPage() {
                             className="rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 shrink-0">
-                            <span className="text-white font-bold text-sm">
+                          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
+                            <span className="text-black dark:text-white font-bold text-sm">
                               {getInitial(message.sender.name)}
                             </span>
                           </div>
@@ -554,20 +542,20 @@ export default function MessagesPage() {
                     )}
                     <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isOwnMessage ? "items-end" : ""}`}>
                       {!isOwnMessage && (
-                        <span className="text-xs text-gray-500 mb-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {message.sender.name} · {formatTime(message.createdAt)}
                         </span>
                       )}
                       {isOwnMessage && (
-                        <span className="text-xs text-gray-500 mb-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {formatTime(message.createdAt)}
                         </span>
                       )}
                       <div
                         className={`rounded-2xl px-4 py-2 ${
                           isOwnMessage
-                            ? "bg-white text-black"
-                            : "bg-[#202327] text-white"
+                            ? "bg-gray-200 dark:bg-white text-black"
+                            : "bg-gray-100 dark:bg-[#202327] text-black dark:text-white"
                         }`}
                       >
                         <p className="text-[15px]">{message.content}</p>
@@ -595,20 +583,20 @@ export default function MessagesPage() {
             {/* chat input */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 md:p-4 border-t border-[#2f3336] flex gap-2 md:gap-3 bg-black"
+              className="p-3 md:p-4 border-t border-gray-300 dark:border-[#2f3336] flex gap-2 md:gap-3 bg-white dark:bg-black"
             >
               <input
                 type="text"
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="Start a message"
-                className="flex-1 bg-[#202327] text-white px-3 md:px-4 py-2 rounded-full outline-none placeholder-gray-500 text-sm md:text-base"
+                className="flex-1 bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-3 md:px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm md:text-base"
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={!messageInput.trim() || sending}
-                className="bg-white text-black font-bold px-4 md:px-6 py-2 rounded-full hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                className="bg-black dark:bg-white text-white dark:text-black font-bold px-4 md:px-6 py-2 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
               >
                 {sending ? "Sending..." : "Send"}
               </button>
@@ -616,7 +604,7 @@ export default function MessagesPage() {
           </>
         ) : (
           // kalo belom ada message
-          <div className="flex-1 flex items-center justify-center text-gray-500 p-4">
+          <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 p-4 bg-white dark:bg-black">
             <div className="text-center">
               <p className="text-xl mb-2">Select a conversation</p>
               <p className="text-sm">Choose a conversation from the list to start messaging</p>
