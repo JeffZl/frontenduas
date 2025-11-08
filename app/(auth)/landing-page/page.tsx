@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AiFillApple, AiOutlineGoogle } from "react-icons/ai";
 
 export const metadata = {
   title: "Cirqlate | Landing",
-  description: "Abadikan moment-mu dan bagikan ke seluruh dunia bersama Cirqlate.",
+  description: "Abadikan moment-mu dan bagikan ke seluruh dunia bersama Cirqulate.",
 };
 
 export default function LandingPage() {
@@ -44,7 +45,7 @@ export default function LandingPage() {
               type="button"
               className="flex w-full items-center justify-center gap-3 rounded-full border border-zinc-800 px-5 py-3 text-base font-semibold transition-colors hover:bg-zinc-900"
             >
-              <Image src="/icons/google.svg" alt="Google" width={20} height={20} />
+              <AiOutlineGoogle className="w-5 h-5" />
               <span>Daftar dengan Google</span>
             </button>
 
@@ -52,7 +53,7 @@ export default function LandingPage() {
               type="button"
               className="flex w-full items-center justify-center gap-3 rounded-full border border-zinc-800 px-5 py-3 text-base font-semibold transition-colors hover:bg-zinc-900"
             >
-              <Image src="/icons/apple.svg" alt="Apple" width={20} height={20} className="invert" />
+              <AiFillApple className="w-5 h-5" />
               <span>Daftar dengan Apple</span>
             </button>
 
@@ -96,4 +97,3 @@ export default function LandingPage() {
     </main>
   );
 }
-
