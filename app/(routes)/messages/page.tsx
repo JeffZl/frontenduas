@@ -1,8 +1,10 @@
 "use client"
 
+import SearchComponent from "@/components/SearchComponent";
+import SearchResult from "@/components/SearchResult";
 import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
-import { FiSearch } from "react-icons/fi";
+import { FiPlus, FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
 
 interface Conversation {
@@ -312,16 +314,7 @@ export default function MessagesPage() {
             </button>
           </div>
           {showSearch && (
-            <div className="mb-3">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search users by name or handle..."
-                className="w-full bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm"
-                autoFocus
-              />
-            </div>
+            <SearchComponent searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           )}
         </div>
 
@@ -346,55 +339,9 @@ export default function MessagesPage() {
               </div>
             ) : (
               <div className="p-2">
-                {searchResults.map((user) => (
-                  <button
-                    key={user._id}
-                    onClick={() => {
-                      handleStartConversation(user.handle)
-                      // On mobile, hide conversations list when starting conversation
-                      if (window.innerWidth < 768) {
-                        setShowConversationsList(false)
-                      }
-                    }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] rounded-lg transition"
-                  >
-                    {user.profilePicture?.url ? (
-                      <Image
-                        src={user.profilePicture.url}
-                        alt={user.name}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover shrink-0"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                        <span className="text-black dark:text-white font-bold text-sm">
-                          {getInitial(user.name)}
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0 text-left">
-                      <div className="font-bold truncate text-black dark:text-white">{user.name}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate">@{user.handle}</div>
-                      {user.bio && (
-                        <div className="text-xs text-gray-600 dark:text-gray-500 truncate mt-1">{user.bio}</div>
-                      )}
-                    </div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  </button>
+                {searchResults.map((user, i) => (
+                  // limit nampilin 3 user aja
+                  i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
                 ))}
               </div>
             )}

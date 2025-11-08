@@ -1,8 +1,6 @@
-export const runtime = "nodejs"
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
 const SECRET = process.env.JWT_SECRET;
 
@@ -10,7 +8,10 @@ if (!SECRET) {
   throw new Error("JWT_SECRET environment variable is required");
 }
 
-export function middleware(req: NextRequest) {
+const encoder = new TextEncoder();
+const secretKey = encoder.encode(SECRET);
+
+export async function proxy(req: NextRequest) {
   const token = req.cookies.get("session_token")?.value;
 
   if (!token) {
@@ -18,9 +19,10 @@ export function middleware(req: NextRequest) {
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET);
+    await jwtVerify(token, secretKey);
     return NextResponse.next();
   } catch (err) {
+    console.error("JWT verification failed:", err);
     return NextResponse.redirect(new URL("/landing-page", req.url));
   }
 }
