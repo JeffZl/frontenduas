@@ -115,7 +115,7 @@ const SignUpPage = () => {
     e.preventDefault();
     if (!isStep5Valid) return;
     console.log(`${baseUrl}/api/auth/sign-up`)
-    fetch(`${baseUrl}/api/auth/sign-up`, {
+    fetch(`/api/auth/sign-up`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
