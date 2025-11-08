@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const hideRightbar = pathname.startsWith("/messages")
 
   return (
-    <div className="flex justify-center bg-black text-white max-w-[1200px] mx-auto">
+    <div className="flex justify-center bg-white dark:bg-black text-black dark:text-white max-w-[1200px] mx-auto">
       <Sidebar />
       <main className="flex-3">{children}</main>
       {!hideRightbar && <Rightbar />}
