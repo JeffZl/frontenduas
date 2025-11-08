@@ -2,31 +2,31 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { FaPlus } from "react-icons/fa";
+import { PiSignOut } from "react-icons/pi";
 
 type ThemePreference = "dark" | "light";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [theme, setTheme] = useState<ThemePreference>("dark");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
-  const isLightMode = theme === "light";
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = (localStorage.getItem("theme") as ThemePreference | null) ?? "dark";
-    const savedNotifications = localStorage.getItem("notifications") ?? "on";
-
-    setTheme(savedTheme);
-    setNotificationsEnabled(savedNotifications !== "off");
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("theme", theme);
+    setMounted(true);
   }, [theme]);
+  
+  if (!mounted) return null;
 
-  useEffect(() => {
-    localStorage.setItem("notifications", notificationsEnabled ? "on" : "off");
-  }, [notificationsEnabled]);
+  const currentTheme =  theme || "dark";
+  const isLightMode = currentTheme === "light";
+
+  // useEffect(() => {
+  //   localStorage.setItem("notifications", notificationsEnabled ? "on" : "off");
+  // }, [notificationsEnabled]);
 
   const handleLogout = async () => {
     const confirmed = window.confirm("Are you sure you want to log out?");
@@ -44,12 +44,12 @@ export default function SettingsPage() {
 
   return (
     <div
-      className={`min-h-screen border-x border-[#2f3336] ${
+      className={`min-h-screen border-x border-gray-300 dark:border-[#2f3336] ${
         isLightMode ? "bg-white text-black" : "bg-black text-white"
       }`}
     >
       <header
-        className={`sticky top-0 z-10 border-b border-[#2f3336] px-6 py-4 backdrop-blur ${
+        className={`sticky top-0 z-10 border-b border-gray-300 dark:border-[#2f3336] px-6 py-4 backdrop-blur ${
           isLightMode ? "bg-white/90" : "bg-black/80"
         }`}
       >
@@ -78,8 +78,12 @@ export default function SettingsPage() {
             <label className="relative inline-flex h-7 w-12 cursor-pointer items-center">
               <input
                 type="checkbox"
-                checked={theme === "light"}
-                onChange={(event) => setTheme(event.target.checked ? "light" : "dark")}
+                checked={currentTheme === "dark"}
+                onChange={(event) => {
+                  const newTheme = event.target.checked ? "dark" : "light";
+                  setTheme(newTheme);
+                  console.log("Theme changed to:", newTheme);
+                }}
                 className="peer sr-only"
               />
               <span
@@ -143,7 +147,7 @@ export default function SettingsPage() {
                   : "border-sky-500 text-sky-500 hover:bg-sky-500/10"
               }`}
             >
-              <span className="text-lg">➕</span>
+              <span className="text-lg"><FaPlus /></span>
               <span>Add Account</span>
             </button>
 
@@ -152,7 +156,7 @@ export default function SettingsPage() {
               onClick={handleLogout}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-red-600 px-5 py-3 font-semibold text-white transition hover:bg-red-500"
             >
-              <span className="text-lg">🚪</span>
+              <span className="text-lg"><PiSignOut /></span>
               <span>Log Out</span>
             </button>
           </div>
