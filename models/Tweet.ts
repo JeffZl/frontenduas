@@ -9,8 +9,14 @@ const tweetSchema = new mongoose.Schema({
   content: {
     type: String,
     maxlength: 280,
-    required: function() {
-      return !this.media || this.media.length === 0;
+    validate: {
+      validator: function(value: string) {
+        if (!this.media || this.media.length === 0) {
+          return value != null && value.trim().length > 0;
+        }
+        return true;
+      },
+      message: 'content is required if there is no picture or video attached'
     }
   },
   media: [{
