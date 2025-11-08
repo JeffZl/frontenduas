@@ -117,10 +117,10 @@ export default function FeedPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="p-3 rounded-lg bg-[#202327] animate-pulse">
-                <div className="w-24 h-3 bg-gray-700 rounded mb-2" />
-                <div className="w-32 h-4 bg-gray-700 rounded mb-2" />
-                <div className="w-20 h-3 bg-gray-700 rounded" />
+              <div key={i} className="p-3 rounded-lg animate-pulse">
+                <div className="w-24 h-3 bg-gray-300 dark:bg-gray-700 rounded mb-2" />
+                <div className="w-32 h-4 bg-gray-300 dark:bg-gray-700 rounded mb-2" />
+                <div className="w-20 h-3 bg-gray-300 dark:bg-gray-700 rounded" />
               </div>
             ))}
           </div>
