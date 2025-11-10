@@ -64,7 +64,7 @@ const Page = ({ params }: { params: { handle: string }}) => {
     }, []);
 
     return (
-        <div className="profile-main-content">
+        <div className="profile-main-content overflow-scroll max-h-[100vh] [&::-webkit-scrollbar]:hidden">
             {/* Profile Header */}
             <ProfileHeader name={user?.name} />
 
