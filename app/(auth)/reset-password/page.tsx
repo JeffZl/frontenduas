@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FiEye as EyeOff, FiEyeOff as Eye } from "react-icons/fi"
+import styles from './page.module.css';
 
 const ResetPasswordPage = () => {
   const router = useRouter();
@@ -135,13 +136,13 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-black text-gray-100 p-4">
-      <div className="bg-black border border-gray-800 p-8 rounded-xl w-full max-w-md shadow-2xl shadow-sky-900/20">
-        <h1 className="text-2xl font-semibold text-center mb-6">Reset Password</h1>
+    <main className={styles.main}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Reset Password</h1>
         
-        <div className="flex justify-center items-center mb-8 space-x-2">
+        <div className={styles.progressContainer}>
           {[1, 2, 3].map((s) => (
-            <div key={s} className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${step >= s ? 'bg-sky-500 text-black font-bold' : 'bg-gray-800 text-gray-500'}`}>
+            <div key={s} className={`${styles.progressStep} ${step >= s ? styles.progressStepActive : styles.progressStepInactive}`}>
               {s}
             </div>
           ))}
@@ -149,9 +150,9 @@ const ResetPasswordPage = () => {
 
         {/* Step 1: Email Input */}
         {step === 1 && (
-          <form onSubmit={handleEmailSubmit} className="animate-fade-in">
-            <div className="text-left mb-6">
-              <label htmlFor="email" className="text-xs text-gray-400 mb-1 block">
+          <form onSubmit={handleEmailSubmit} className={styles.section}>
+            <div className={styles.formGroup}>
+              <label htmlFor="email" className={styles.label}>
                 Email
               </label>
               <input 
@@ -161,7 +162,7 @@ const ResetPasswordPage = () => {
                 value={formData.email} 
                 onChange={handleChange} 
                 required 
-                className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                className={styles.input} 
                 placeholder="Enter your email" 
                 suppressHydrationWarning
               />
@@ -170,15 +171,15 @@ const ResetPasswordPage = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+              className={`${styles.button} ${styles.buttonPrimary}`}
               suppressHydrationWarning
             >
               {loading ? 'Loading...' : 'Next'}
             </button>
             
-            <div className="text-center mt-6 text-sm">
-              <span className="text-gray-400">Ingat password? </span>
-              <Link href="/sign-in" className="text-sky-500 hover:underline font-medium">
+            <div className={styles.footer}>
+              <span className={styles.footerText}>Ingat password? </span>
+              <Link href="/sign-in" className={styles.footerLink}>
                 Sign-In
               </Link>
             </div>
@@ -187,13 +188,13 @@ const ResetPasswordPage = () => {
 
         {/* Step 2: Secret Words Verification */}
         {step === 2 && (
-          <form onSubmit={handleSecretWordsSubmit} className="animate-fade-in">
-            <p className="text-sm text-gray-400 mb-6 text-center">
+          <form onSubmit={handleSecretWordsSubmit} className={styles.section}>
+            <p className={styles.sectionDescription}>
               Enter the 2 secret words you created during registration.
             </p>
 
-            <div className="text-left mb-4">
-              <label htmlFor="secretWord1" className="text-xs text-gray-400 mb-1 block">
+            <div className={styles.formGroupMedium}>
+              <label htmlFor="secretWord1" className={styles.label}>
                 Secret Word 1
               </label>
               <input 
@@ -203,14 +204,14 @@ const ResetPasswordPage = () => {
                 value={formData.secretWord1} 
                 onChange={handleChange} 
                 required 
-                className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                className={styles.input} 
                 placeholder="Enter the first secret word" 
                 suppressHydrationWarning
               />
             </div>
             
-            <div className="text-left mb-6">
-              <label htmlFor="secretWord2" className="text-xs text-gray-400 mb-1 block">
+            <div className={styles.formGroup}>
+              <label htmlFor="secretWord2" className={styles.label}>
                 Secret Word 2
               </label>
               <input 
@@ -220,7 +221,7 @@ const ResetPasswordPage = () => {
                 value={formData.secretWord2} 
                 onChange={handleChange} 
                 required 
-                className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                className={styles.input} 
                 placeholder="Enter the second secret word" 
                 suppressHydrationWarning
               />
@@ -229,7 +230,7 @@ const ResetPasswordPage = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+              className={`${styles.button} ${styles.buttonPrimary}`}
             >
               {loading ? 'Verifying...' : 'Verification'}
             </button>
@@ -238,12 +239,12 @@ const ResetPasswordPage = () => {
 
         {/* Step 3: New Password */}
         {step === 3 && (
-          <form onSubmit={handlePasswordReset} className="animate-fade-in">
-            <div className="text-left mb-4">
-              <label htmlFor="newPassword" className="text-xs text-gray-400 mb-1 block">
+          <form onSubmit={handlePasswordReset} className={styles.section}>
+            <div className={styles.formGroupMedium}>
+              <label htmlFor="newPassword" className={styles.label}>
                 New password
               </label>
-              <div className="relative">
+              <div className={styles.passwordWrapper}>
                 <input 
                   id="newPassword" 
                   name="newPassword" 
@@ -251,25 +252,25 @@ const ResetPasswordPage = () => {
                   value={formData.newPassword} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 pr-10 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.inputPassword} 
                   placeholder="Enter your new password" 
                   suppressHydrationWarning
                 />
                 <button 
                   type="button" 
                   onClick={() => setShowNewPassword(!showNewPassword)} 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+                  className={styles.eyeButton}
                 >
                   {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
             
-            <div className="text-left mb-6">
-              <label htmlFor="confirmPassword" className="text-xs text-gray-400 mb-1 block">
+            <div className={styles.formGroup}>
+              <label htmlFor="confirmPassword" className={styles.label}>
                 Confirm New Password
               </label>
-              <div className="relative">
+              <div className={styles.passwordWrapper}>
                 <input 
                   id="confirmPassword" 
                   name="confirmPassword" 
@@ -277,14 +278,14 @@ const ResetPasswordPage = () => {
                   value={formData.confirmPassword} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 pr-10 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.inputPassword} 
                   placeholder="Confirm new password" 
                   suppressHydrationWarning
                 />
                 <button 
                   type="button" 
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+                  className={styles.eyeButton}
                 >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -294,7 +295,7 @@ const ResetPasswordPage = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-3 rounded-lg font-semibold transition-all bg-green-500 text-black hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+              className={`${styles.button} ${styles.buttonSuccess}`}
             >
               {loading ? 'Loading...' : 'Reset Password'}
             </button>
@@ -303,7 +304,7 @@ const ResetPasswordPage = () => {
 
         {/* Message Display */}
         {message && (
-          <div className={`mt-4 p-3 rounded-lg text-sm text-center ${isSuccess ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+          <div className={`${styles.message} ${isSuccess ? styles.messageSuccess : styles.messageError}`}>
             {message}
           </div>
         )}
