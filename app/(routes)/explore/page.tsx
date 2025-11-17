@@ -4,6 +4,7 @@ import SearchComponent from "@/components/SearchComponent"
 import SearchResult from "@/components/SearchResult"
 import Trenditem from "@/components/TrendItem"
 import { useEffect, useState } from "react"
+import styles from "./style.module.css"
 
 interface Trend {
   topic: string,
@@ -72,11 +73,9 @@ export default function FeedPage() {
     return () => clearTimeout(timer)
   }, [searchQuery])
 
-
-
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-dark dark:text-white border-x border-gray-300 dark:border-[#2f3336] p-4">
-      <div className="p-4 border-b border-gray-300 dark:border-[#2f3336]">
+    <main className={`${styles.container}`}>
+      <div className={`${styles.searchSection}`}>
         <SearchComponent
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -84,25 +83,25 @@ export default function FeedPage() {
       </div>
 
       {searchQuery && (
-        <div className="border-b border-gray-300 dark:border-[#2f3336] max-h-96 overflow-y-auto">
+        <div className={`${styles.searchResults}`}>
           {searching ? (
-            <div className="p-4 space-y-3">
+            <div className={styles.searchLoading}>
               {[1, 2].map((i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                  <div className="flex-1">
-                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                    <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+                <div key={i} className={styles.searchLoadingItem}>
+                  <div className={`${styles.avatarSkeleton}`} />
+                  <div>
+                    <div className={`${styles.textSkeleton} ${styles.skeletonSmall}`} />
+                    <div className={`${styles.textSkeleton} ${styles.skeletonMedium}`} />
                   </div>
                 </div>
               ))}
             </div>
           ) : searchResults.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-              <p className="text-sm">No users found</p>
+            <div className={`${styles.noResults}`}>
+              <p className={styles.noResultsText}>No users found</p>
             </div>
           ) : (
-            <div className="p-2">
+            <div className={styles.searchResultsContent}>
               {searchResults.map((user, i) => (
                 // limit nampilin 3 user aja
                 i < 3 && <SearchResult key={user._id} user={user} mode="profile" />
@@ -112,25 +111,25 @@ export default function FeedPage() {
         </div>
       )}
 
-      <section className="p-4">
-        <h2 className="text-xl font-bold mb-4">Trending Now</h2>
+      <section className={styles.trendsSection}>
+        <h2 className={styles.sectionTitle}>Trending Now</h2>
         {loading ? (
-          <div className="space-y-3">
+          <div className={styles.trendsLoading}>
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="p-3 rounded-lg animate-pulse">
-                <div className="w-24 h-3 bg-gray-300 dark:bg-gray-700 rounded mb-2" />
-                <div className="w-32 h-4 bg-gray-300 dark:bg-gray-700 rounded mb-2" />
-                <div className="w-20 h-3 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div key={i} className={styles.trendSkeleton}>
+                <div className={`${styles.topicSkeleton}`} />
+                <div className={`${styles.titleSkeleton}`} />
+                <div className={`${styles.countSkeleton}`} />
               </div>
             ))}
           </div>
         ) : trending.length === 0 ? (
-          <div className="py-8 text-center text-gray-500">
-            <p>No trends available yet</p>
-            <p className="text-sm mt-2">Start using hashtags in your posts to see trends!</p>
+          <div className={`${styles.noTrends}`}>
+            <p className={styles.noTrendsText}>No trends available yet</p>
+            <p className={styles.noTrendsSubtext}>Start using hashtags in your posts to see trends!</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className={styles.trendsList}>
             {trending.map(({ postCount, title, topic }, index) => (
               <Trenditem key={`${title}-${index}`} postCount={postCount} title={title} topic={topic} />
             ))}

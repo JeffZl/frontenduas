@@ -7,6 +7,8 @@ import { useState, useEffect, useRef } from "react"
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
 
+import styles from "./style.module.css"
+
 interface Conversation {
   _id: string
   participant: {
@@ -295,271 +297,261 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white relative">
-      {/* main section buat list conversation */}
-      <div
-        className={`${
-          showConversationsList ? "flex" : "hidden"
-        } md:flex w-full md:w-96 border-r border-gray-300 dark:border-[#2f3336] flex-col absolute md:relative inset-0 z-10 md:z-auto bg-white dark:bg-black`}
-      >
-        <div className="p-4 border-b border-gray-300 dark:border-[#2f3336]">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-black dark:text-white">Messages</h1>
-            <button
-              onClick={() => setShowSearch(!showSearch)}
-              className="text-black dark:text-white bg-gray-100 dark:bg-[#202327] hover:bg-gray-200 dark:hover:bg-[#2f3336] rounded-full p-2 transition"
-              title="Search users"
-            >
-              <FiSearch className="w-5 h-5" />
-            </button>
-          </div>
-          {showSearch && (
-            <SearchComponent searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          )}
-        </div>
+    <div className={`${styles.container}`}>
+  {/* main section buat list conversation */}
+  <div
+    className={`${styles.conversationsList} ${
+      showConversationsList ? styles.conversationsListMobile : styles.conversationsListHidden
+    } ${styles.conversationsListDesktop}`}
+  >
+    <div className={`${styles.conversationsHeader}`}>
+      <div className={styles.headerTop}>
+        <h1 className={`${styles.headerTitle}`}>Messages</h1>
+        <button
+          onClick={() => setShowSearch(!showSearch)}
+          className={`${styles.searchButton}`}
+          title="Search users"
+        >
+          <FiSearch className={styles.searchIcon} />
+        </button>
+      </div>
+      {showSearch && (
+        <SearchComponent searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      )}
+    </div>
 
-        {/* Search Results */}
-        {showSearch && searchQuery && (
-          <div className="border-b border-gray-300 dark:border-[#2f3336] max-h-96 overflow-y-auto">
-            {searching ? (
-              <div className="p-4 space-y-3">
-                {[1, 2].map((i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                    <div className="flex-1">
-                      <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                      <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
-                    </div>
-                  </div>
-                ))}
+    {/* Search Results */}
+    {showSearch && searchQuery && (
+      <div className={`${styles.searchResults}`}>
+        {searching ? (
+          <div className={styles.searchLoading}>
+            {[1, 2].map((i) => (
+              <div key={i} className={styles.searchLoadingItem}>
+                <div className={`${styles.avatarSkeleton}`} />
+                <div className={styles.textSkeletonContainer}>
+                  <div className={`${styles.textSkeleton} ${styles.skeletonMedium}`} />
+                  <div className={`${styles.textSkeleton} ${styles.skeletonSmall}`} />
+                </div>
               </div>
-            ) : searchResults.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <p className="text-sm">No users found</p>
+            ))}
+          </div>
+        ) : searchResults.length === 0 ? (
+          <div className={`${styles.noResults}`}>
+            <p className={styles.noResultsText}>No users found</p>
+          </div>
+        ) : (
+          <div className={styles.searchResultsContent}>
+            {searchResults.map((user, i) => (
+              i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
+            ))}
+          </div>
+        )}
+      </div>
+    )}
+
+    <div className={styles.conversationsContent}>
+      {loading ? (
+        <div className={styles.conversationsLoading}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className={styles.conversationLoadingItem}>
+              <div className={`${styles.largeAvatarSkeleton}`} />
+              <div className={styles.textSkeletonContainer}>
+                <div className={`${styles.textSkeleton} ${styles.skeletonMedium}`} />
+                <div className={`${styles.textSkeleton} ${styles.skeletonSmall}`} />
               </div>
+            </div>
+          ))}
+        </div>
+      ) : conversations.length === 0 ? (
+        <div className={`${styles.emptyConversations}`}>
+          <p>No conversations yet</p>
+          <p className={styles.emptySubtext}>Start a conversation from a user's profile</p>
+        </div>
+      ) : (
+        conversations.map((conv) => (
+          <button
+            key={conv._id}
+            onClick={() => {
+              setSelectedConversation(conv)
+              // On mobile, hide conversations list when selecting
+              if (window.innerWidth < 768) {
+                setShowConversationsList(false)
+              }
+            }}
+            className={`${styles.conversationItem} ${
+              selectedConversation?._id === conv._id ? `${styles.activeConversation}` : ""
+            }`}
+          >
+            {conv.participant.profilePicture?.url ? (
+              <Image
+                src={conv.participant.profilePicture.url}
+                alt={conv.participant.name}
+                width={48}
+                height={48}
+                className={styles.conversationAvatar}
+              />
             ) : (
-              <div className="p-2">
-                {searchResults.map((user, i) => (
-                  // limit nampilin 3 user aja
-                  i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
-                ))}
+              <div className={`${styles.avatarPlaceholder}`}>
+                <span>{getInitial(conv.participant.name)}</span>
               </div>
             )}
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto">
-          {loading ? (
-            <div className="p-4 space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3 p-3">
-                  <div className="w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                  <div className="flex-1">
-                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                    <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : conversations.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-              <p>No conversations yet</p>
-              <p className="text-sm mt-2">Start a conversation from a user's profile</p>
-            </div>
-          ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv._id}
-                onClick={() => {
-                  setSelectedConversation(conv)
-                  // On mobile, hide conversations list when selecting
-                  if (window.innerWidth < 768) {
-                    setShowConversationsList(false)
-                  }
-                }}
-                className={`w-full flex items-center gap-3 p-3 md:p-4 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] transition ${
-                  selectedConversation?._id === conv._id ? "bg-gray-100 dark:bg-[#0f0f0f]" : ""
-                }`}
-              >
-                {conv.participant.profilePicture?.url ? (
-                  <Image
-                    src={conv.participant.profilePicture.url}
-                    alt={conv.participant.name}
-                    width={48}
-                    height={48}
-                    className="rounded-full object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                    <span className="text-black dark:text-white font-bold text-lg">
-                      {getInitial(conv.participant.name)}
-                    </span>
-                  </div>
-                )}
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold truncate text-black dark:text-white">{conv.participant.name}</span>
-                    {conv.lastMessage && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0">
-                        {formatTime(conv.lastMessageAt)}
-                      </span>
-                    )}
-                  </div>
-                  {conv.lastMessage ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {conv.lastMessage.sender.handle === currentUser?.handle
-                        ? `You: ${conv.lastMessage.content}`
-                        : conv.lastMessage.content}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">No messages yet</p>
-                  )}
-                </div>
-              </button>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* right section message */}
-      <div className="flex-1 flex flex-col w-full md:w-auto pb-20 md:pb-0">
-        {selectedConversation ? (
-          <>
-            {/* header conversation */}
-            <div className="p-3 md:p-4 border-b border-gray-300 dark:border-[#2f3336] flex items-center gap-3 bg-white dark:bg-black">
-              {/* button buat balik di mobile */}
-              <button
-                onClick={() => {
-                  setSelectedConversation(null)
-                  setShowConversationsList(true)
-                }}
-                className="md:hidden text-black dark:text-white hover:bg-gray-100 dark:hover:bg-[#2f3336] rounded-full p-2 transition -ml-2"
-                aria-label="Back to conversations"
-              >
-                <IoMdArrowBack className="w-5 h-5" />
-              </button>
-              {selectedConversation.participant.profilePicture?.url ? (
-                <Image
-                  src={selectedConversation.participant.profilePicture.url}
-                  alt={selectedConversation.participant.name}
-                  width={40}
-                  height={40}
-                  className="rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
-                  <span className="text-black dark:text-white font-bold">
-                    {getInitial(selectedConversation.participant.name)}
+            <div className={styles.conversationDetails}>
+              <div className={styles.conversationHeader}>
+                <span className={`${styles.conversationName}`}>{conv.participant.name}</span>
+                {conv.lastMessage && (
+                  <span className={`${styles.conversationTime}`}>
+                    {formatTime(conv.lastMessageAt)}
                   </span>
-                </div>
-              )}
-              <div>
-                <h2 className="font-bold text-black dark:text-white">{selectedConversation.participant.name}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">@{selectedConversation.participant.handle}</p>
+                )}
               </div>
+              {conv.lastMessage ? (
+                <p className={`${styles.conversationPreview}`}>
+                  {conv.lastMessage.sender.handle === currentUser?.handle
+                    ? `You: ${conv.lastMessage.content}`
+                    : conv.lastMessage.content}
+                </p>
+              ) : (
+                <p className={`${styles.conversationPreview}`}>No messages yet</p>
+              )}
             </div>
+          </button>
+        ))
+      )}
+    </div>
+  </div>
 
-            {/* section message sesama user */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 pb-24 md:pb-4 bg-white dark:bg-black">
-              {messages.map((message) => {
-                const isOwnMessage = message.sender._id === currentUser?._id
-                return (
-                  <div
-                    key={message._id}
-                    className={`flex gap-3 ${isOwnMessage ? "justify-end" : ""}`}
-                  >
-                    {!isOwnMessage && (
-                      <>
-                        {message.sender.profilePicture?.url ? (
-                          <Image
-                            src={message.sender.profilePicture.url}
-                            alt={message.sender.name}
-                            width={40}
-                            height={40}
-                            className="rounded-full object-cover shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                            <span className="text-black dark:text-white font-bold text-sm">
-                              {getInitial(message.sender.name)}
-                            </span>
-                          </div>
-                        )}
-                      </>
+  {/* right section message */}
+  <div className={styles.messageSection}>
+    {selectedConversation ? (
+      <>
+        {/* header conversation */}
+        <div className={`${styles.messageHeader}`}>
+          {/* button buat balik di mobile */}
+          <button
+            onClick={() => {
+              setSelectedConversation(null)
+              setShowConversationsList(true)
+            }}
+            className={`${styles.backButton} ${styles.mobileOnly}`}
+            aria-label="Back to conversations"
+          >
+            <IoMdArrowBack className={styles.backIcon} />
+          </button>
+          {selectedConversation.participant.profilePicture?.url ? (
+            <Image
+              src={selectedConversation.participant.profilePicture.url}
+              alt={selectedConversation.participant.name}
+              width={40}
+              height={40}
+              className={styles.smallAvatar}
+            />
+          ) : (
+            <div className={`${styles.smallAvatarPlaceholder}`}>
+              <span>{getInitial(selectedConversation.participant.name)}</span>
+            </div>
+          )}
+          <div>
+            <h2 className={`${styles.participantName}`}>{selectedConversation.participant.name}</h2>
+            <p className={`${styles.participantHandle}`}>@{selectedConversation.participant.handle}</p>
+          </div>
+        </div>
+
+        {/* section message sesama user */}
+        <div className={`${styles.messagesContainer}`}>
+          {messages.map((message) => {
+            const isOwnMessage = message.sender._id === currentUser?._id
+            return (
+              <div
+                key={message._id}
+                className={`${styles.message} ${isOwnMessage ? styles.ownMessage : ""}`}
+              >
+                {!isOwnMessage && (
+                  <>
+                    {message.sender.profilePicture?.url ? (
+                      <Image
+                        src={message.sender.profilePicture.url}
+                        alt={message.sender.name}
+                        width={40}
+                        height={40}
+                        className={styles.messageAvatar}
+                      />
+                    ) : (
+                      <div className={`${styles.smallAvatarPlaceholder}`}>
+                        <span className={styles.smallInitial}>{getInitial(message.sender.name)}</span>
+                      </div>
                     )}
-                    <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isOwnMessage ? "items-end" : ""}`}>
-                      {!isOwnMessage && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          {message.sender.name} · {formatTime(message.createdAt)}
-                        </span>
-                      )}
-                      {isOwnMessage && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          {formatTime(message.createdAt)}
-                        </span>
-                      )}
-                      <div
-                        className={`rounded-2xl px-4 py-2 ${
-                          isOwnMessage
-                            ? "bg-gray-200 dark:bg-white text-black"
-                            : "bg-gray-100 dark:bg-[#202327] text-black dark:text-white"
-                        }`}
-                      >
-                        <p className="text-[15px]">{message.content}</p>
-                        {message.media && message.media.length > 0 && (
-                          <div className="mt-2">
-                            {message.media[0].mediaType === "image" && (
-                              <Image
-                                src={message.media[0].url}
-                                alt="Message media"
-                                width={300}
-                                height={200}
-                                className="rounded-lg object-cover"
-                              />
-                            )}
-                          </div>
+                  </>
+                )}
+                <div className={`${styles.messageContent} ${isOwnMessage ? styles.ownMessageContent : ""}`}>
+                  {!isOwnMessage && (
+                    <span className={`${styles.messageInfo}`}>
+                      {message.sender.name} · {formatTime(message.createdAt)}
+                    </span>
+                  )}
+                  {isOwnMessage && (
+                    <span className={`${styles.messageInfo}`}>
+                      {formatTime(message.createdAt)}
+                    </span>
+                  )}
+                  <div
+                    className={`${styles.messageBubble} ${
+                      isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
+                    }`}
+                  >
+                    <p>{message.content}</p>
+                    {message.media && message.media.length > 0 && (
+                      <div className={styles.messageMedia}>
+                        {message.media[0].mediaType === "image" && (
+                          <Image
+                            src={message.media[0].url}
+                            alt="Message media"
+                            width={300}
+                            height={200}
+                            className={styles.mediaImage}
+                          />
                         )}
                       </div>
-                    </div>
+                    )}
                   </div>
-                )
-              })}
-              <div ref={messagesEndRef} />
-            </div>
+                </div>
+              </div>
+            )
+          })}
+          <div ref={messagesEndRef} />
+        </div>
 
-            {/* chat input */}
-            <form
-              onSubmit={handleSendMessage}
-              className="p-3 md:p-4 border-t border-gray-300 dark:border-[#2f3336] flex gap-2 md:gap-3 bg-white dark:bg-black"
-            >
-              <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                placeholder="Start a message"
-                className="flex-1 bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-3 md:px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm md:text-base"
-                disabled={sending}
-              />
-              <button
-                type="submit"
-                disabled={!messageInput.trim() || sending}
-                className="bg-black dark:bg-white text-white dark:text-black font-bold px-4 md:px-6 py-2 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
-              >
-                {sending ? "Sending..." : "Send"}
-              </button>
-            </form>
-          </>
-        ) : (
-          // kalo belom ada message
-          <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 p-4 bg-white dark:bg-black">
-            <div className="text-center">
-              <p className="text-xl mb-2">Select a conversation</p>
-              <p className="text-sm">Choose a conversation from the list to start messaging</p>
-            </div>
-          </div>
-        )}
+        {/* chat input */}
+        <form
+          onSubmit={handleSendMessage}
+          className={`${styles.messageForm}`}
+        >
+          <input
+            type="text"
+            value={messageInput}
+            onChange={(e) => setMessageInput(e.target.value)}
+            placeholder="Start a message"
+            className={`${styles.messageInput}`}
+            disabled={sending}
+          />
+          <button
+            type="submit"
+            disabled={!messageInput.trim() || sending}
+            className={`${styles.sendButton}`}
+          >
+            {sending ? "Sending..." : "Send"}
+          </button>
+        </form>
+      </>
+    ) : (
+      // kalo belom ada message
+      <div className={`${styles.emptyState}`}>
+        <div className={styles.emptyStateContent}>
+          <p className={styles.emptyStateTitle}>Select a conversation</p>
+          <p className={styles.emptyStateText}>Choose a conversation from the list to start messaging</p>
+        </div>
       </div>
-
-    </div>
+    )}
+  </div>
+</div>
   )
 }
