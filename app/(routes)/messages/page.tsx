@@ -297,261 +297,269 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className={`${styles.container}`}>
-  {/* main section buat list conversation */}
-  <div
-    className={`${styles.conversationsList} ${
-      showConversationsList ? styles.conversationsListMobile : styles.conversationsListHidden
-    } ${styles.conversationsListDesktop}`}
-  >
-    <div className={`${styles.conversationsHeader}`}>
-      <div className={styles.headerTop}>
-        <h1 className={`${styles.headerTitle}`}>Messages</h1>
-        <button
-          onClick={() => setShowSearch(!showSearch)}
-          className={`${styles.searchButton}`}
-          title="Search users"
-        >
-          <FiSearch className={styles.searchIcon} />
-        </button>
-      </div>
-      {showSearch && (
-        <SearchComponent searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      )}
-    </div>
+    <div className={styles.container}>
+      {/* Conversations List Section */}
+      <div
+        className={`${styles.conversationsList} ${
+          showConversationsList ? styles.show : styles.hide
+        }`}
+      >
+        <div className={styles.conversationsHeader}>
+          <div className={styles.headerTop}>
+            <h1 className={styles.title}>Messages</h1>
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className={styles.searchButton}
+              title="Search users"
+            >
+              <FiSearch className={styles.searchIcon} />
+            </button>
+          </div>
+          {showSearch && (
+            <SearchComponent searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          )}
+        </div>
 
-    {/* Search Results */}
-    {showSearch && searchQuery && (
-      <div className={`${styles.searchResults}`}>
-        {searching ? (
-          <div className={styles.searchLoading}>
-            {[1, 2].map((i) => (
-              <div key={i} className={styles.searchLoadingItem}>
-                <div className={`${styles.avatarSkeleton}`} />
-                <div className={styles.textSkeletonContainer}>
-                  <div className={`${styles.textSkeleton} ${styles.skeletonMedium}`} />
-                  <div className={`${styles.textSkeleton} ${styles.skeletonSmall}`} />
-                </div>
+        {/* Search Results */}
+        {showSearch && searchQuery && (
+          <div className={styles.searchResults}>
+            {searching ? (
+              <div className={styles.loadingSkeleton}>
+                {[1, 2].map((i) => (
+                  <div key={i} className={styles.skeletonItem}>
+                    <div className={styles.skeletonAvatar} />
+                    <div className={styles.skeletonText}>
+                      <div className={styles.skeletonName} />
+                      <div className={styles.skeletonHandle} />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : searchResults.length === 0 ? (
+              <div className={styles.noResults}>
+                <p>No users found</p>
+              </div>
+            ) : (
+              <div className={styles.resultsList}>
+                {searchResults.map((user, i) => (
+                  i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
+                ))}
+              </div>
+            )}
           </div>
-        ) : searchResults.length === 0 ? (
-          <div className={`${styles.noResults}`}>
-            <p className={styles.noResultsText}>No users found</p>
-          </div>
+        )}
+
+        <div className={styles.conversationsContent}>
+          {loading ? (
+            <div className={styles.loadingSkeleton}>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={styles.conversationSkeleton}>
+                  <div className={styles.skeletonAvatarLarge} />
+                  <div className={styles.skeletonText}>
+                    <div className={styles.skeletonName} />
+                    <div className={styles.skeletonMessage} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : conversations.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>No conversations yet</p>
+              <p>Start a conversation from a user's profile</p>
+            </div>
+          ) : (
+            conversations.map((conv) => (
+              <button
+                key={conv._id}
+                onClick={() => {
+                  setSelectedConversation(conv)
+                  if (window.innerWidth < 768) {
+                    setShowConversationsList(false)
+                  }
+                }}
+                className={`${styles.conversationItem} ${
+                  selectedConversation?._id === conv._id ? styles.active : ""
+                }`}
+              >
+                {conv.participant.profilePicture?.url ? (
+                  <Image
+                    src={conv.participant.profilePicture.url}
+                    alt={conv.participant.name}
+                    width={48}
+                    height={48}
+                    className={styles.avatar}
+                  />
+                ) : (
+                  <div className={styles.avatarPlaceholder}>
+                    <span className={styles.avatarInitial}>
+                      {getInitial(conv.participant.name)}
+                    </span>
+                  </div>
+                )}
+                <div className={styles.conversationInfo}>
+                  <div className={styles.conversationHeader}>
+                    <span className={styles.conversationName}>{conv.participant.name}</span>
+                    {conv.lastMessage && (
+                      <span className={styles.timeStamp}>
+                        {formatTime(conv.lastMessageAt)}
+                      </span>
+                    )}
+                  </div>
+                  {conv.lastMessage ? (
+                    <p className={styles.lastMessage}>
+                      {conv.lastMessage.sender.handle === currentUser?.handle
+                        ? `You: ${conv.lastMessage.content}`
+                        : conv.lastMessage.content}
+                    </p>
+                  ) : (
+                    <p className={styles.lastMessage}>No messages yet</p>
+                  )}
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Messages Section */}
+      <div className={styles.messagesSection}>
+        {selectedConversation ? (
+          <>
+            {/* Conversation Header */}
+            <div className={styles.messagesHeader}>
+              <button
+                onClick={() => {
+                  setSelectedConversation(null)
+                  setShowConversationsList(true)
+                }}
+                className={styles.backButton}
+                aria-label="Back to conversations"
+              >
+                <IoMdArrowBack className={styles.backIcon} />
+              </button>
+              {selectedConversation.participant.profilePicture?.url ? (
+                <Image
+                  src={selectedConversation.participant.profilePicture.url}
+                  alt={selectedConversation.participant.name}
+                  width={40}
+                  height={40}
+                  className={styles.messageAvatar}
+                />
+              ) : (
+                <div className={styles.messageAvatarPlaceholder}>
+                  <span className={styles.messageAvatarInitial}>
+                    {getInitial(selectedConversation.participant.name)}
+                  </span>
+                </div>
+              )}
+              <div className={styles.messageUserInfo}>
+                <h2 className={styles.messageUserName}>{selectedConversation.participant.name}</h2>
+                <p className={styles.messageUserHandle}>@{selectedConversation.participant.handle}</p>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className={styles.messagesContainer}>
+              {messages.map((message) => {
+                const isOwnMessage = message.sender._id === currentUser?._id
+                return (
+                  <div
+                    key={message._id}
+                    className={`${styles.messageWrapper} ${
+                      isOwnMessage ? styles.ownMessage : ""
+                    }`}
+                  >
+                    {!isOwnMessage && (
+                      <>
+                        {message.sender.profilePicture?.url ? (
+                          <Image
+                            src={message.sender.profilePicture.url}
+                            alt={message.sender.name}
+                            width={40}
+                            height={40}
+                            className={styles.messageAvatarSmall}
+                          />
+                        ) : (
+                          <div className={styles.messageAvatarSmallPlaceholder}>
+                            <span className={styles.messageAvatarSmallInitial}>
+                              {getInitial(message.sender.name)}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    <div className={`${styles.messageContent} ${
+                      isOwnMessage ? styles.ownMessageContent : ""
+                    }`}>
+                      {!isOwnMessage && (
+                        <span className={styles.messageMeta}>
+                          {message.sender.name} · {formatTime(message.createdAt)}
+                        </span>
+                      )}
+                      {isOwnMessage && (
+                        <span className={styles.messageMeta}>
+                          {formatTime(message.createdAt)}
+                        </span>
+                      )}
+                      <div
+                        className={`${styles.messageBubble} ${
+                          isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
+                        }`}
+                      >
+                        <p className={styles.messageText}>{message.content}</p>
+                        {message.media && message.media.length > 0 && (
+                          <div className={styles.messageMedia}>
+                            {message.media[0].mediaType === "image" && (
+                              <Image
+                                src={message.media[0].url}
+                                alt="Message media"
+                                width={300}
+                                height={200}
+                                className={styles.mediaImage}
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Message Input */}
+            <form
+              onSubmit={handleSendMessage}
+              className={styles.messageForm}
+            >
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                placeholder="Start a message"
+                className={styles.messageInput}
+                disabled={sending}
+              />
+              <button
+                type="submit"
+                disabled={!messageInput.trim() || sending}
+                className={styles.sendButton}
+              >
+                {sending ? "Sending..." : "Send"}
+              </button>
+            </form>
+          </>
         ) : (
-          <div className={styles.searchResultsContent}>
-            {searchResults.map((user, i) => (
-              i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
-            ))}
+          // Empty State
+          <div className={styles.emptyMessages}>
+            <div className={styles.emptyMessagesContent}>
+              <p className={styles.emptyMessagesTitle}>Select a conversation</p>
+              <p className={styles.emptyMessagesSubtitle}>Choose a conversation from the list to start messaging</p>
+            </div>
           </div>
         )}
       </div>
-    )}
-
-    <div className={styles.conversationsContent}>
-      {loading ? (
-        <div className={styles.conversationsLoading}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className={styles.conversationLoadingItem}>
-              <div className={`${styles.largeAvatarSkeleton}`} />
-              <div className={styles.textSkeletonContainer}>
-                <div className={`${styles.textSkeleton} ${styles.skeletonMedium}`} />
-                <div className={`${styles.textSkeleton} ${styles.skeletonSmall}`} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : conversations.length === 0 ? (
-        <div className={`${styles.emptyConversations}`}>
-          <p>No conversations yet</p>
-          <p className={styles.emptySubtext}>Start a conversation from a user's profile</p>
-        </div>
-      ) : (
-        conversations.map((conv) => (
-          <button
-            key={conv._id}
-            onClick={() => {
-              setSelectedConversation(conv)
-              // On mobile, hide conversations list when selecting
-              if (window.innerWidth < 768) {
-                setShowConversationsList(false)
-              }
-            }}
-            className={`${styles.conversationItem} ${
-              selectedConversation?._id === conv._id ? `${styles.activeConversation}` : ""
-            }`}
-          >
-            {conv.participant.profilePicture?.url ? (
-              <Image
-                src={conv.participant.profilePicture.url}
-                alt={conv.participant.name}
-                width={48}
-                height={48}
-                className={styles.conversationAvatar}
-              />
-            ) : (
-              <div className={`${styles.avatarPlaceholder}`}>
-                <span>{getInitial(conv.participant.name)}</span>
-              </div>
-            )}
-            <div className={styles.conversationDetails}>
-              <div className={styles.conversationHeader}>
-                <span className={`${styles.conversationName}`}>{conv.participant.name}</span>
-                {conv.lastMessage && (
-                  <span className={`${styles.conversationTime}`}>
-                    {formatTime(conv.lastMessageAt)}
-                  </span>
-                )}
-              </div>
-              {conv.lastMessage ? (
-                <p className={`${styles.conversationPreview}`}>
-                  {conv.lastMessage.sender.handle === currentUser?.handle
-                    ? `You: ${conv.lastMessage.content}`
-                    : conv.lastMessage.content}
-                </p>
-              ) : (
-                <p className={`${styles.conversationPreview}`}>No messages yet</p>
-              )}
-            </div>
-          </button>
-        ))
-      )}
     </div>
-  </div>
-
-  {/* right section message */}
-  <div className={styles.messageSection}>
-    {selectedConversation ? (
-      <>
-        {/* header conversation */}
-        <div className={`${styles.messageHeader}`}>
-          {/* button buat balik di mobile */}
-          <button
-            onClick={() => {
-              setSelectedConversation(null)
-              setShowConversationsList(true)
-            }}
-            className={`${styles.backButton} ${styles.mobileOnly}`}
-            aria-label="Back to conversations"
-          >
-            <IoMdArrowBack className={styles.backIcon} />
-          </button>
-          {selectedConversation.participant.profilePicture?.url ? (
-            <Image
-              src={selectedConversation.participant.profilePicture.url}
-              alt={selectedConversation.participant.name}
-              width={40}
-              height={40}
-              className={styles.smallAvatar}
-            />
-          ) : (
-            <div className={`${styles.smallAvatarPlaceholder}`}>
-              <span>{getInitial(selectedConversation.participant.name)}</span>
-            </div>
-          )}
-          <div>
-            <h2 className={`${styles.participantName}`}>{selectedConversation.participant.name}</h2>
-            <p className={`${styles.participantHandle}`}>@{selectedConversation.participant.handle}</p>
-          </div>
-        </div>
-
-        {/* section message sesama user */}
-        <div className={`${styles.messagesContainer}`}>
-          {messages.map((message) => {
-            const isOwnMessage = message.sender._id === currentUser?._id
-            return (
-              <div
-                key={message._id}
-                className={`${styles.message} ${isOwnMessage ? styles.ownMessage : ""}`}
-              >
-                {!isOwnMessage && (
-                  <>
-                    {message.sender.profilePicture?.url ? (
-                      <Image
-                        src={message.sender.profilePicture.url}
-                        alt={message.sender.name}
-                        width={40}
-                        height={40}
-                        className={styles.messageAvatar}
-                      />
-                    ) : (
-                      <div className={`${styles.smallAvatarPlaceholder}`}>
-                        <span className={styles.smallInitial}>{getInitial(message.sender.name)}</span>
-                      </div>
-                    )}
-                  </>
-                )}
-                <div className={`${styles.messageContent} ${isOwnMessage ? styles.ownMessageContent : ""}`}>
-                  {!isOwnMessage && (
-                    <span className={`${styles.messageInfo}`}>
-                      {message.sender.name} · {formatTime(message.createdAt)}
-                    </span>
-                  )}
-                  {isOwnMessage && (
-                    <span className={`${styles.messageInfo}`}>
-                      {formatTime(message.createdAt)}
-                    </span>
-                  )}
-                  <div
-                    className={`${styles.messageBubble} ${
-                      isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
-                    }`}
-                  >
-                    <p>{message.content}</p>
-                    {message.media && message.media.length > 0 && (
-                      <div className={styles.messageMedia}>
-                        {message.media[0].mediaType === "image" && (
-                          <Image
-                            src={message.media[0].url}
-                            alt="Message media"
-                            width={300}
-                            height={200}
-                            className={styles.mediaImage}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* chat input */}
-        <form
-          onSubmit={handleSendMessage}
-          className={`${styles.messageForm}`}
-        >
-          <input
-            type="text"
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            placeholder="Start a message"
-            className={`${styles.messageInput}`}
-            disabled={sending}
-          />
-          <button
-            type="submit"
-            disabled={!messageInput.trim() || sending}
-            className={`${styles.sendButton}`}
-          >
-            {sending ? "Sending..." : "Send"}
-          </button>
-        </form>
-      </>
-    ) : (
-      // kalo belom ada message
-      <div className={`${styles.emptyState}`}>
-        <div className={styles.emptyStateContent}>
-          <p className={styles.emptyStateTitle}>Select a conversation</p>
-          <p className={styles.emptyStateText}>Choose a conversation from the list to start messaging</p>
-        </div>
-      </div>
-    )}
-  </div>
-</div>
   )
 }
