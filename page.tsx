@@ -7,8 +7,6 @@ import { useState, useEffect, useRef } from "react"
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
 
-import styles from "./style.module.css"
-
 interface Conversation {
   _id: string
   participant: {
@@ -297,22 +295,22 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className={styles.container}>
-      {/* Conversations List Section */}
+    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white relative">
+      {/* main section buat list conversation */}
       <div
-        className={`${styles.conversationsList} ${
-          showConversationsList ? styles.show : styles.hide
-        }`}
+        className={`${
+          showConversationsList ? "flex" : "hidden"
+        } md:flex w-full md:w-96 border-r border-gray-300 dark:border-[#2f3336] flex-col absolute md:relative inset-0 z-10 md:z-auto bg-white dark:bg-black`}
       >
-        <div className={styles.conversationsHeader}>
-          <div className={styles.headerTop}>
-            <h1 className={styles.title}>Messages</h1>
+        <div className="p-4 border-b border-gray-300 dark:border-[#2f3336]">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl font-bold text-black dark:text-white">Messages</h1>
             <button
               onClick={() => setShowSearch(!showSearch)}
-              className={styles.searchButton}
+              className="text-black dark:text-white bg-gray-100 dark:bg-[#202327] hover:bg-gray-200 dark:hover:bg-[#2f3336] rounded-full p-2 transition"
               title="Search users"
             >
-              <FiSearch className={styles.searchIcon} />
+              <FiSearch className="w-5 h-5" />
             </button>
           </div>
           {showSearch && (
@@ -322,26 +320,27 @@ export default function MessagesPage() {
 
         {/* Search Results */}
         {showSearch && searchQuery && (
-          <div className={styles.searchResults}>
+          <div className="border-b border-gray-300 dark:border-[#2f3336] max-h-96 overflow-y-auto">
             {searching ? (
-              <div className={styles.loadingSkeleton}>
+              <div className="p-4 space-y-3">
                 {[1, 2].map((i) => (
-                  <div key={i} className={styles.skeletonItem}>
-                    <div className={styles.skeletonAvatar} />
-                    <div className={styles.skeletonText}>
-                      <div className={styles.skeletonName} />
-                      <div className={styles.skeletonHandle} />
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
+                    <div className="flex-1">
+                      <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                      <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : searchResults.length === 0 ? (
-              <div className={styles.noResults}>
-                <p>No users found</p>
+              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                <p className="text-sm">No users found</p>
               </div>
             ) : (
-              <div className={styles.resultsList}>
+              <div className="p-2">
                 {searchResults.map((user, i) => (
+                  // limit nampilin 3 user aja
                   i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
                 ))}
               </div>
@@ -349,23 +348,23 @@ export default function MessagesPage() {
           </div>
         )}
 
-        <div className={styles.conversationsContent}>
+        <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className={styles.loadingSkeleton}>
+            <div className="p-4 space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className={styles.conversationSkeleton}>
-                  <div className={styles.skeletonAvatarLarge} />
-                  <div className={styles.skeletonText}>
-                    <div className={styles.skeletonName} />
-                    <div className={styles.skeletonMessage} />
+                <div key={i} className="flex items-center gap-3 p-3">
+                  <div className="w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
+                  <div className="flex-1">
+                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                    <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
                   </div>
                 </div>
               ))}
             </div>
           ) : conversations.length === 0 ? (
-            <div className={styles.emptyState}>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <p>No conversations yet</p>
-              <p>Start a conversation from a user's profile</p>
+              <p className="text-sm mt-2">Start a conversation from a user's profile</p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -373,12 +372,13 @@ export default function MessagesPage() {
                 key={conv._id}
                 onClick={() => {
                   setSelectedConversation(conv)
+                  // On mobile, hide conversations list when selecting
                   if (window.innerWidth < 768) {
                     setShowConversationsList(false)
                   }
                 }}
-                className={`${styles.conversationItem} ${
-                  selectedConversation?._id === conv._id ? styles.active : ""
+                className={`w-full flex items-center gap-3 p-3 md:p-4 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] transition ${
+                  selectedConversation?._id === conv._id ? "bg-gray-100 dark:bg-[#0f0f0f]" : ""
                 }`}
               >
                 {conv.participant.profilePicture?.url ? (
@@ -387,32 +387,32 @@ export default function MessagesPage() {
                     alt={conv.participant.name}
                     width={48}
                     height={48}
-                    className={styles.avatar}
+                    className="rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className={styles.avatarPlaceholder}>
-                    <span className={styles.avatarInitial}>
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
+                    <span className="text-black dark:text-white font-bold text-lg">
                       {getInitial(conv.participant.name)}
                     </span>
                   </div>
                 )}
-                <div className={styles.conversationInfo}>
-                  <div className={styles.conversationHeader}>
-                    <span className={styles.conversationName}>{conv.participant.name}</span>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold truncate text-black dark:text-white">{conv.participant.name}</span>
                     {conv.lastMessage && (
-                      <span className={styles.timeStamp}>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0">
                         {formatTime(conv.lastMessageAt)}
                       </span>
                     )}
                   </div>
                   {conv.lastMessage ? (
-                    <p className={styles.lastMessage}>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                       {conv.lastMessage.sender.handle === currentUser?.handle
                         ? `You: ${conv.lastMessage.content}`
                         : conv.lastMessage.content}
                     </p>
                   ) : (
-                    <p className={styles.lastMessage}>No messages yet</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">No messages yet</p>
                   )}
                 </div>
               </button>
@@ -421,21 +421,22 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* Messages Section */}
-      <div className={styles.messagesSection}>
+      {/* right section message */}
+      <div className="flex-1 flex flex-col w-full md:w-auto pb-20 md:pb-0">
         {selectedConversation ? (
           <>
-            {/* Conversation Header */}
-            <div className={styles.messagesHeader}>
+            {/* header conversation */}
+            <div className="p-3 md:p-4 border-b border-gray-300 dark:border-[#2f3336] flex items-center gap-3 bg-white dark:bg-black">
+              {/* button buat balik di mobile */}
               <button
                 onClick={() => {
                   setSelectedConversation(null)
                   setShowConversationsList(true)
                 }}
-                className={styles.backButton}
+                className="md:hidden text-black dark:text-white hover:bg-gray-100 dark:hover:bg-[#2f3336] rounded-full p-2 transition -ml-2"
                 aria-label="Back to conversations"
               >
-                <IoMdArrowBack className={styles.backIcon} />
+                <IoMdArrowBack className="w-5 h-5" />
               </button>
               {selectedConversation.participant.profilePicture?.url ? (
                 <Image
@@ -443,31 +444,29 @@ export default function MessagesPage() {
                   alt={selectedConversation.participant.name}
                   width={40}
                   height={40}
-                  className={styles.messageAvatar}
+                  className="rounded-full object-cover"
                 />
               ) : (
-                <div className={styles.messageAvatarPlaceholder}>
-                  <span className={styles.messageAvatarInitial}>
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
+                  <span className="text-black dark:text-white font-bold">
                     {getInitial(selectedConversation.participant.name)}
                   </span>
                 </div>
               )}
-              <div className={styles.messageUserInfo}>
-                <h2 className={styles.messageUserName}>{selectedConversation.participant.name}</h2>
-                <p className={styles.messageUserHandle}>@{selectedConversation.participant.handle}</p>
+              <div>
+                <h2 className="font-bold text-black dark:text-white">{selectedConversation.participant.name}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">@{selectedConversation.participant.handle}</p>
               </div>
             </div>
 
-            {/* Messages */}
-            <div className={styles.messagesContainer}>
+            {/* section message sesama user */}
+            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 pb-24 md:pb-4 bg-white dark:bg-black">
               {messages.map((message) => {
                 const isOwnMessage = message.sender._id === currentUser?._id
                 return (
                   <div
                     key={message._id}
-                    className={`${styles.messageWrapper} ${
-                      isOwnMessage ? styles.ownMessage : ""
-                    }`}
+                    className={`flex gap-3 ${isOwnMessage ? "justify-end" : ""}`}
                   >
                     {!isOwnMessage && (
                       <>
@@ -477,45 +476,45 @@ export default function MessagesPage() {
                             alt={message.sender.name}
                             width={40}
                             height={40}
-                            className={styles.messageAvatarSmall}
+                            className="rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div className={styles.messageAvatarSmallPlaceholder}>
-                            <span className={styles.messageAvatarSmallInitial}>
+                          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
+                            <span className="text-black dark:text-white font-bold text-sm">
                               {getInitial(message.sender.name)}
                             </span>
                           </div>
                         )}
                       </>
                     )}
-                    <div className={`${styles.messageContent} ${
-                      isOwnMessage ? styles.ownMessageContent : ""
-                    }`}>
+                    <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isOwnMessage ? "items-end" : ""}`}>
                       {!isOwnMessage && (
-                        <span className={styles.messageMeta}>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {message.sender.name} · {formatTime(message.createdAt)}
                         </span>
                       )}
                       {isOwnMessage && (
-                        <span className={styles.messageMeta}>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {formatTime(message.createdAt)}
                         </span>
                       )}
                       <div
-                        className={`${styles.messageBubble} ${
-                          isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
+                        className={`rounded-2xl px-4 py-2 ${
+                          isOwnMessage
+                            ? "bg-gray-200 dark:bg-white text-black"
+                            : "bg-gray-100 dark:bg-[#202327] text-black dark:text-white"
                         }`}
                       >
-                        <p className={styles.messageText}>{message.content}</p>
+                        <p className="text-[15px]">{message.content}</p>
                         {message.media && message.media.length > 0 && (
-                          <div className={styles.messageMedia}>
+                          <div className="mt-2">
                             {message.media[0].mediaType === "image" && (
                               <Image
                                 src={message.media[0].url}
                                 alt="Message media"
                                 width={300}
                                 height={200}
-                                className={styles.mediaImage}
+                                className="rounded-lg object-cover"
                               />
                             )}
                           </div>
@@ -528,38 +527,39 @@ export default function MessagesPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Message Input */}
+            {/* chat input */}
             <form
               onSubmit={handleSendMessage}
-              className={styles.messageForm}
+              className="p-3 md:p-4 border-t border-gray-300 dark:border-[#2f3336] flex gap-2 md:gap-3 bg-white dark:bg-black"
             >
               <input
                 type="text"
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="Start a message"
-                className={styles.messageInput}
+                className="flex-1 bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-3 md:px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm md:text-base"
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={!messageInput.trim() || sending}
-                className={styles.sendButton}
+                className="bg-black dark:bg-white text-white dark:text-black font-bold px-4 md:px-6 py-2 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
               >
                 {sending ? "Sending..." : "Send"}
               </button>
             </form>
           </>
         ) : (
-          // Empty State
-          <div className={styles.emptyMessages}>
-            <div className={styles.emptyMessagesContent}>
-              <p className={styles.emptyMessagesTitle}>Select a conversation</p>
-              <p className={styles.emptyMessagesSubtitle}>Choose a conversation from the list to start messaging</p>
+          // kalo belom ada message
+          <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 p-4 bg-white dark:bg-black">
+            <div className="text-center">
+              <p className="text-xl mb-2">Select a conversation</p>
+              <p className="text-sm">Choose a conversation from the list to start messaging</p>
             </div>
           </div>
         )}
       </div>
+
     </div>
   )
 }
