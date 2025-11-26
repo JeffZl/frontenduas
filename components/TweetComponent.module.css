@@ -1,22 +1,22 @@
-.tweet-article {
+.tweetArticle {
   padding: 1rem;
   border-bottom: 1px solid #d1d5db;
   transition: background-color 0.2s ease;
 }
 
-:global(.dark) .tweet-article {
+:global(.dark) .tweetArticle {
   border-color: #2f3336;
 }
 
-.tweet-article:hover {
+.tweetArticle:hover {
   background-color: #f9f9f9;
 }
 
-:global(.dark) .tweet-article:hover {
+:global(.dark) .tweetArticle:hover {
   background-color: #0a0a0a;
 }
 
-.tweet-body {
+.tweetBody {
   display: flex;
   gap: 0.75rem;
 }
@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 
-.avatar-fallback {
+.avatarFallback {
   width: 48px;
   height: 48px;
   background: #d1d5db;
@@ -38,25 +38,25 @@
   cursor: pointer;
 }
 
-:global(.dark) .avatar-fallback {
+:global(.dark) .avatarFallback {
   background: #4b5563;
 }
 
-.avatar-fallback span {
+.avatarFallback span {
   font-weight: bold;
   color: black;
 }
 
-:global(.dark) .avatar-fallback span {
+:global(.dark) .avatarFallback span {
   color: white;
 }
 
-.tweet-content {
+.tweetContent {
   flex: 1;
   min-width: 0;
 }
 
-.tweet-header {
+.tweetHeader {
   display: flex;
   gap: 0.4rem;
   align-items: center;
@@ -96,45 +96,45 @@
   color: white;
 }
 
-.media-wrapper {
+.mediaWrapper {
   margin-bottom: 0.75rem;
   border-radius: 1rem;
   overflow: hidden;
 }
 
-.media-single {
+.mediaSingle {
   position: relative;
 }
 
-.media-video {
+.mediaVideo {
   width: 100%;
   max-height: 500px;
   object-fit: contain;
   background: black;
 }
 
-.media-image {
+.mediaImage {
   width: 100%;
   height: auto;
   object-fit: contain;
 }
 
-.media-grid {
+.mediaGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2px;
 }
 
-.media-grid-item {
+.mediaGridItem {
   position: relative;
   aspect-ratio: 1 / 1;
 }
 
-.media-grid-image {
+.mediaGridImage {
   object-fit: cover;
 }
 
-.tweet-actions {
+.tweetActions {
   display: flex;
   justify-content: space-between;
   max-width: 320px;
@@ -142,7 +142,7 @@
   color: #6b7280;
 }
 
-:global(.dark) .tweet-actions {
+:global(.dark) .tweetActions {
   color: #9ca3af;
 }
 
