@@ -1,0 +1,167 @@
+.tweet-article {
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+  transition: background-color 0.2s ease;
+}
+
+:global(.dark) .tweet-article {
+  border-color: #2f3336;
+}
+
+.tweet-article:hover {
+  background-color: #f9f9f9;
+}
+
+:global(.dark) .tweet-article:hover {
+  background-color: #0a0a0a;
+}
+
+.tweet-body {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.avatar {
+  border-radius: 9999px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.avatar-fallback {
+  width: 48px;
+  height: 48px;
+  background: #d1d5db;
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+:global(.dark) .avatar-fallback {
+  background: #4b5563;
+}
+
+.avatar-fallback span {
+  font-weight: bold;
+  color: black;
+}
+
+:global(.dark) .avatar-fallback span {
+  color: white;
+}
+
+.tweet-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tweet-header {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.name {
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+}
+
+:global(.dark) .name {
+  color: white;
+}
+
+.handle,
+.time {
+  color: #6b7280;
+}
+
+:global(.dark) .handle,
+:global(.dark) .time {
+  color: #9ca3af;
+}
+
+.text {
+  color: black;
+  margin-bottom: 0.75rem;
+  white-space: pre-wrap;
+}
+
+:global(.dark) .text {
+  color: white;
+}
+
+.media-wrapper {
+  margin-bottom: 0.75rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.media-single {
+  position: relative;
+}
+
+.media-video {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  background: black;
+}
+
+.media-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+.media-grid-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+
+.media-grid-image {
+  object-fit: cover;
+}
+
+.tweet-actions {
+  display: flex;
+  justify-content: space-between;
+  max-width: 320px;
+  margin-top: 0.75rem;
+  color: #6b7280;
+}
+
+:global(.dark) .tweet-actions {
+  color: #9ca3af;
+}
+
+.action {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.reply:hover {
+  color: #3b82f6;
+}
+
+.retweet:hover {
+  color: #10b981;
+}
+
+.like:hover {
+  color: #ef4444;
+}
