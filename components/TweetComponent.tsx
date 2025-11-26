@@ -2,7 +2,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { FiHeart, FiMessageCircle, FiRepeat } from "react-icons/fi"
-import "./TweetComponent.module.css"
+import styles from "./TweetComponent.module.css"
 
 interface tweetInterface {
   _id: string
@@ -42,8 +42,8 @@ const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
     }
 
     return (
-        <article className="tweet-article">
-            <div className="tweet-body">
+        <article className={styles.tweetArticle}>
+            <div className={styles.tweetBody}>
                 <Link href={`/profile/${tweet.author.handle}`}>
                     {tweet.author.profilePicture?.url ? (
                         <Image
@@ -51,38 +51,38 @@ const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
                             alt={tweet.author.name}
                             width={48}
                             height={48}
-                            className="avatar"
+                            className={styles.avatar}
                         />
                     ) : (
-                        <div className="avatar-fallback">
+                        <div className={styles.avatarFallback}>
                             <span>{tweet.author.name?.[0]?.toUpperCase() || "?"}</span>
                         </div>
                     )}
                 </Link>
 
-                <div className="tweet-content">
-                    <div className="tweet-header">
-                        <Link href={`/profile/${tweet.author.handle}`} className="name">
+                <div className={styles.tweetContent}>
+                    <div className={styles.tweetHeader}>
+                        <Link href={`/profile/${tweet.author.handle}`} className={styles.name}>
                         {tweet.author.name}
                         </Link>
-                        <span className="handle">@{tweet.author.handle}</span>
+                        <span className={styles.handle}>@{tweet.author.handle}</span>
                         <span>·</span>
-                        <span className="time">{formatTime(tweet.createdAt)}</span>
+                        <span className={styles.time}>{formatTime(tweet.createdAt)}</span>
                     </div>
 
                     {tweet.content && (
-                        <p className="text">{tweet.content}</p>
+                        <p className={styles.text}>{tweet.content}</p>
                     )}
 
                     {tweet.media && tweet.media.length > 0 && (
-                        <div className="media-wrapper">
+                        <div className={styles.mediaWrapper}>
                         {tweet.media.length === 1 ? (
-                            <div className="media-single">
+                            <div className={styles.mediaSingle}>
                             {tweet.media[0].mediaType === "video" ? (
                                 <video
                                 src={tweet.media[0].url}
                                 controls
-                                className="media-video"
+                                className={styles.mediaVideo}
                                 poster={tweet.media[0].thumbnail}
                                 />
                             ) : (
@@ -91,19 +91,19 @@ const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
                                 alt={tweet.media[0].altText || "Tweet media"}
                                 width={600}
                                 height={400}
-                                className="media-image"
+                                className={styles.mediaImage}
                                 />
                             )}
                             </div>
                         ) : (
-                            <div className="media-grid">
+                            <div className={styles.mediaGrid}>
                             {tweet.media.slice(0, 4).map((m, idx) => (
-                                <div key={idx} className="media-grid-item">
+                                <div key={idx} className={styles.mediaGridItem}>
                                 {m.mediaType === "video" ? (
                                     <video
                                     src={m.url}
                                     controls
-                                    className="media-video"
+                                    className={styles.mediaVideo}
                                     poster={m.thumbnail}
                                     />
                                 ) : (
@@ -111,7 +111,7 @@ const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
                                     src={m.url}
                                     alt={m.altText || `Media ${idx + 1}`}
                                     fill
-                                    className="media-grid-image"
+                                    className={styles.mediaGridImage}
                                     />
                                 )}
                                 </div>
@@ -121,16 +121,16 @@ const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
                         </div>
                     )}
 
-                    <div className="tweet-actions">
-                        <button className="action reply">
+                    <div className={styles.tweetActions}>
+                        <button className={`${styles.action} ${styles.reply}`}>
                         <FiMessageCircle />
                         <span>{tweet.repliesCount || 0}</span>
                         </button>
-                        <button className="action retweet">
+                        <button className={`${styles.action} ${styles.retweet}`}>
                         <FiRepeat />
                         <span>{tweet.retweetsCount || 0}</span>
                         </button>
-                        <button className="action like">
+                        <button className={`${styles.action} ${styles.like}`}>
                         <FiHeart />
                         <span>{tweet.likesCount || 0}</span>
                         </button>
