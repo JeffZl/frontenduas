@@ -1,0 +1,256 @@
+/* Sidebar.module.css */
+.sidebar {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  border-right: 1px solid #d1d5db;
+  padding: 1rem;
+  width: 250px;
+  background-color: white;
+}
+
+:global(.dark) .sidebar {
+  border-right-color: #2f3336;
+  background-color: black;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.logo {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.postBtn {
+  width: 100%;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  border-radius: 9999px;
+  padding: 0.75rem 0;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.postBtn:hover {
+  background-color: #1f2937;
+}
+
+:global(.dark) .postBtn {
+  background-color: white;
+  color: black;
+}
+
+:global(.dark) .postBtn:hover {
+  background-color: #e5e7eb;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.userSection:hover {
+  background-color: #f3f4f6;
+}
+
+:global(.dark) .userSection:hover {
+  background-color: #1a1a1a;
+}
+
+.loadingUser {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatarSkeleton {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #d1d5db;
+  border-radius: 9999px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+:global(.dark) .avatarSkeleton {
+  background-color: #374151;
+}
+
+.userInfoSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nameSkeleton {
+  width: 5rem;
+  height: 0.75rem;
+  background-color: #d1d5db;
+  border-radius: 0.25rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.handleSkeleton {
+  width: 3.5rem;
+  height: 0.75rem;
+  background-color: #d1d5db;
+  border-radius: 0.25rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+:global(.dark) .nameSkeleton,
+:global(.dark) .handleSkeleton {
+  background-color: #374151;
+}
+
+.userAvatar {
+  border-radius: 9999px;
+  margin-right: 0.5rem;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #d1d5db;
+  margin-right: 0.5rem;
+}
+
+:global(.dark) .avatarPlaceholder {
+  background-color: #374151;
+}
+
+.avatarInitial {
+  color: black;
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+:global(.dark) .avatarInitial {
+  color: white;
+}
+
+.userInfo {
+  line-height: 1.25;
+}
+
+.userName {
+  display: block;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 120px;
+  color: black;
+}
+
+:global(.dark) .userName {
+  color: white;
+}
+
+.userHandle {
+  display: block;
+  color: #4b5563;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 120px;
+}
+
+:global(.dark) .userHandle {
+  color: #6b7280;
+}
+
+.mobileNav {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #d1d5db;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 30;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+:global(.dark) .mobileNav {
+  border-top-color: #2f3336;
+  background-color: rgba(0, 0, 0, 0.95);
+}
+
+@media (min-width: 768px) {
+  .mobileNav {
+    display: none;
+  }
+}
+
+.mobileNavContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+}
+
+.mobilePlusButton {
+  display: block;
+  position: fixed;
+  bottom: 4rem;
+  right: 1rem;
+  background-color: black;
+  color: white;
+  border-radius: 9999px;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  z-index: 30;
+}
+
+:global(.dark) .mobilePlusButton {
+  background-color: white;
+  color: black;
+}
+
+@media (min-width: 768px) {
+  .mobilePlusButton {
+    display: none;
+  }
+}
+
+.plusIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  color: black;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+:global(.dark) .container {
+  background-color: black;
+  color: white;
+}
+
+.main {
+  flex: 3;
+}

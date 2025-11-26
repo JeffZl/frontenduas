@@ -1,0 +1,136 @@
+.rightbar {
+    padding: 1.25rem;
+    display: none;
+    flex-direction: column;
+    gap: 1.25rem;
+    border-left: 1px solid #d1d5db;
+    background-color: #ffffff;
+}
+
+@media (min-width: 1280px) {
+    .rightbar {
+        display: flex;
+        flex: 1.5;
+    }
+}
+
+:global(.dark) .rightbar {
+    background-color: #000000;
+    border-left-color: #2f3336;
+}
+
+/* Card */
+.card {
+    border: 1px solid #d1d5db;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+}
+
+:global(.dark) .card {
+    background-color: #000000;
+    border-color: #2f3336;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 0.625rem;
+    color: #000;
+}
+
+:global(.dark) .title {
+    color: #fff;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.noSuggest {
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+:global(.dark) .noSuggest {
+    color: #6b7280;
+}
+
+.skeletonList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.skeletonItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skeletonLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.avatarPulse {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #d1d5db;
+    border-radius: 999px;
+    animation: pulse 1.5s infinite;
+}
+
+:global(.dark) .avatarPulse {
+    background-color: #374151;
+}
+
+.nameGroup {
+    flex-grow: 1;
+}
+
+.textPulseShort,
+.textPulseLong {
+    border-radius: 0.25rem;
+    background-color: #d1d5db;
+    animation: pulse 1.5s infinite;
+}
+
+:global(.dark) .textPulseShort,
+:global(.dark) .textPulseLong {
+    background-color: #374151;
+}
+
+.textPulseShort {
+    width: 5rem; 
+    height: 1rem; 
+    margin-bottom: 0.25rem;
+}
+
+.textPulseLong {
+    width: 6rem; 
+    height: 0.75rem;
+}
+
+.btnPulse {
+    width: 5rem;
+    height: 2rem;
+    background-color: #d1d5db;
+    border-radius: 999px;
+    animation: pulse 1.5s infinite;
+}
+
+:global(.dark) .btnPulse {
+    background-color: #374151;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: .4; }
+    100% { opacity: 1; }
+}

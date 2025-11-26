@@ -1,0 +1,26 @@
+.wrapper {
+    margin-bottom: 0.75rem;
+}
+
+.input {
+    width: 100%;
+    background-color: #f3f4f6;
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    outline: none;
+    font-size: 0.875rem;
+}
+
+.input::placeholder {
+    color: #6b7280;
+}
+
+:global(.dark) .input {
+    background-color: #202327;
+    color: #fff;
+}
+
+:global(.dark) .input::placeholder {
+    color: #9ca3af;
+}

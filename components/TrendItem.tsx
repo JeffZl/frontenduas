@@ -1,4 +1,5 @@
 import Link from "next/link";
+import styles from "./TrendItem.module.css";
 
 interface Trend {
     topic: string;
@@ -8,19 +9,20 @@ interface Trend {
 
 const TrendItem = ({ topic, title, postCount }: Trend) => {
     const titleSliced = title.startsWith("#") ? title.slice(1) : title;
+
     return (
-        <div
-            className="p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-[#1a1a1a] cursor-pointer transition"
-        >
-            <Link href={`/explore/${titleSliced}`}>
-                <span className="block text-gray-400 text-sm">
+        <div className={styles.trendItem}>
+            <Link href={`/explore/${titleSliced}`} className={styles.link}>
+                <span className={styles.topic}>
                     {topic} · Trending
                 </span>
-                <p className="font-bold text-lg">{title}</p>
-                <span className="block text-gray-500 text-sm">{postCount}</span>
+
+                <p className={styles.title}>{title}</p>
+
+                <span className={styles.postCount}>{postCount}</span>
             </Link>
         </div>
-    )
-}
+    );
+};
 
-export default TrendItem
+export default TrendItem;

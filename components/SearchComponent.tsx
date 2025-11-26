@@ -1,3 +1,5 @@
+import styles from "./SearchComponent.module.css";
+
 interface searchProps {
     searchQuery: string;
     setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
@@ -5,17 +7,17 @@ interface searchProps {
 
 const SearchComponent = ({ searchQuery, setSearchQuery }: searchProps) => {
     return (
-        <div className="mb-3">
+        <div className={styles.wrapper}>
             <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search users by name or handle..."
-            className="w-full bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm"
-            autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search users by name or handle..."
+                className={styles.input}
+                autoFocus
             />
         </div>
-    )
-}
+    );
+};
 
-export default SearchComponent
+export default SearchComponent;
