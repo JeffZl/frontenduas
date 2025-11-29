@@ -1,9 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
+import "./messages.css";
 
 interface Conversation {
   _id: string
@@ -64,24 +65,25 @@ export default function MessagesPage() {
   const [messageInput, setMessageInput] = useState("")
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [currentUser, setCurrentUser] = useState<{ _id: string; handle: string } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showSearch, setShowSearch] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchUser[]>([])
   const [searching, setSearching] = useState(false)
   const [showConversationsList, setShowConversationsList] = useState(true)
+  const previousConversationsRef = useRef<Conversation[]>([])
 
   useEffect(() => {
     fetchCurrentUser()
     fetchConversations()
-    
+
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setShowConversationsList(true)
       }
     }
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -105,7 +107,7 @@ export default function MessagesPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  // looping tiap 3 detik buat tau ada chat terbaru
+  // looping tiap 3 detik buat tau ada chat terbaru di conversation yang dipilih
   useEffect(() => {
     if (!selectedConversation) return
 
@@ -143,21 +145,62 @@ export default function MessagesPage() {
     }
   }
 
-  const fetchConversations = async () => {
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return "now"
+    if (diffMins < 60) return `${diffMins}m`
+    if (diffHours < 24) return `${diffHours}h`
+    if (diffDays < 7) return `${diffDays}d`
+    return date.toLocaleDateString()
+  }
+
+
+  const fetchConversations = useCallback(async (silent = false) => {
     try {
       const res = await fetch("/api/conversations", {
         credentials: "include",
       })
       if (res.ok) {
         const data = await res.json()
-        setConversations(data.conversations || [])
+        const newConversations = data.conversations || []
+
+        setConversations(newConversations)
+        previousConversationsRef.current = newConversations
       }
     } catch (error) {
-      console.error("Error fetching conversations:", error)
+      if (!silent) {
+        console.error("Error fetching conversations:", error)
+      }
     } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      }
     }
-  }
+  }, [])
+
+  // Poll untuk semua conversations untuk detect new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations(true) // silent fetch
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [fetchConversations])
+
+  // Poll untuk semua conversations untuk detect new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations(true) // silent fetch
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [fetchConversations])
 
   const fetchMessages = async (conversationId: string, silent = false) => {
     try {
@@ -219,21 +262,6 @@ export default function MessagesPage() {
     }
   }
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return "now"
-    if (diffMins < 60) return `${diffMins}m`
-    if (diffHours < 24) return `${diffHours}h`
-    if (diffDays < 7) return `${diffDays}d`
-    return date.toLocaleDateString()
-  }
-
   const getInitial = (name?: string) => {
     return name?.[0]?.toUpperCase() || "?"
   }
@@ -278,9 +306,9 @@ export default function MessagesPage() {
           lastMessageAt: data.conversation.lastMessageAt,
         }
         setSelectedConversation(newConversation)
-        
+
         await fetchConversations()
-        
+
         setShowSearch(false)
         setSearchQuery("")
         setSearchResults([])
@@ -293,32 +321,30 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white relative">
+    <div className="messages-container">
       {/* main section buat list conversation */}
       <div
-        className={`${
-          showConversationsList ? "flex" : "hidden"
-        } md:flex w-full md:w-96 border-r border-gray-300 dark:border-[#2f3336] flex-col absolute md:relative inset-0 z-10 md:z-auto bg-white dark:bg-black`}
+        className={`conversations-section ${showConversationsList ? "show" : ""}`}
       >
-        <div className="p-4 border-b border-gray-300 dark:border-[#2f3336]">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-black dark:text-white">Messages</h1>
+        <div className="conversations-header">
+          <div className="header-top">
+            <h1 className="header-title">Messages</h1>
             <button
               onClick={() => setShowSearch(!showSearch)}
-              className="text-black dark:text-white bg-gray-100 dark:bg-[#202327] hover:bg-gray-200 dark:hover:bg-[#2f3336] rounded-full p-2 transition"
+              className="search-button"
               title="Search users"
             >
-              <FiSearch className="w-5 h-5" />
+              <FiSearch className="search-icon" />
             </button>
           </div>
           {showSearch && (
-            <div className="mb-3">
+            <div className="search-input-container">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search users by name or handle..."
-                className="w-full bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm"
+                className="search-input"
                 autoFocus
               />
             </div>
@@ -327,25 +353,25 @@ export default function MessagesPage() {
 
         {/* Search Results */}
         {showSearch && searchQuery && (
-          <div className="border-b border-gray-300 dark:border-[#2f3336] max-h-96 overflow-y-auto">
+          <div className="search-results">
             {searching ? (
-              <div className="p-4 space-y-3">
+              <div className="search-loading">
                 {[1, 2].map((i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                    <div className="flex-1">
-                      <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                      <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+                  <div key={i} className="search-loading-item">
+                    <div className="search-loading-avatar" />
+                    <div className="search-loading-text">
+                      <div className="search-loading-name" />
+                      <div className="search-loading-handle" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : searchResults.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <p className="text-sm">No users found</p>
+              <div className="search-empty">
+                <p className="search-empty-text">No users found</p>
               </div>
             ) : (
-              <div className="p-2">
+              <div className="search-results-list">
                 {searchResults.map((user) => (
                   <button
                     key={user._id}
@@ -356,7 +382,7 @@ export default function MessagesPage() {
                         setShowConversationsList(false)
                       }
                     }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] rounded-lg transition"
+                    className="search-result-item"
                   >
                     {user.profilePicture?.url ? (
                       <Image
@@ -364,20 +390,20 @@ export default function MessagesPage() {
                         alt={user.name}
                         width={40}
                         height={40}
-                        className="rounded-full object-cover shrink-0"
+                        className="profile-image"
                       />
                     ) : (
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                        <span className="text-black dark:text-white font-bold text-sm">
+                      <div className="profile-avatar">
+                        <span className="profile-avatar-text">
                           {getInitial(user.name)}
                         </span>
                       </div>
                     )}
-                    <div className="flex-1 min-w-0 text-left">
-                      <div className="font-bold truncate text-black dark:text-white">{user.name}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate">@{user.handle}</div>
+                    <div className="user-info">
+                      <div className="user-name">{user.name}</div>
+                      <div className="user-handle">@{user.handle}</div>
                       {user.bio && (
-                        <div className="text-xs text-gray-600 dark:text-gray-500 truncate mt-1">{user.bio}</div>
+                        <div className="user-bio">{user.bio}</div>
                       )}
                     </div>
                     <svg
@@ -386,7 +412,7 @@ export default function MessagesPage() {
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                      className="add-icon"
                     >
                       <path
                         strokeLinecap="round"
@@ -401,23 +427,23 @@ export default function MessagesPage() {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="conversations-list">
           {loading ? (
-            <div className="p-4 space-y-3">
+            <div className="conversations-loading">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3 p-3">
-                  <div className="w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                  <div className="flex-1">
-                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                    <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+                <div key={i} className="conversations-loading-item">
+                  <div className="conversations-loading-avatar" />
+                  <div className="search-loading-text">
+                    <div className="search-loading-name" />
+                    <div className="search-loading-handle" />
                   </div>
                 </div>
               ))}
             </div>
           ) : conversations.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="conversations-empty">
               <p>No conversations yet</p>
-              <p className="text-sm mt-2">Start a conversation from a user's profile</p>
+              <p className="conversations-empty-subtext">Start a conversation from a user&apos;s profile</p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -430,9 +456,7 @@ export default function MessagesPage() {
                     setShowConversationsList(false)
                   }
                 }}
-                className={`w-full flex items-center gap-3 p-3 md:p-4 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] transition ${
-                  selectedConversation?._id === conv._id ? "bg-gray-100 dark:bg-[#0f0f0f]" : ""
-                }`}
+                className={`conversation-item ${selectedConversation?._id === conv._id ? "active" : ""}`}
               >
                 {conv.participant.profilePicture?.url ? (
                   <Image
@@ -440,32 +464,32 @@ export default function MessagesPage() {
                     alt={conv.participant.name}
                     width={48}
                     height={48}
-                    className="rounded-full object-cover shrink-0"
+                    className="profile-image"
                   />
                 ) : (
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                    <span className="text-black dark:text-white font-bold text-lg">
+                  <div className="profile-avatar profile-avatar-large">
+                    <span className="profile-avatar-text profile-avatar-large-text">
                       {getInitial(conv.participant.name)}
                     </span>
                   </div>
                 )}
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold truncate text-black dark:text-white">{conv.participant.name}</span>
+                <div className="user-info">
+                  <div className="conversation-header-row">
+                    <span className="user-name">{conv.participant.name}</span>
                     {conv.lastMessage && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0">
+                      <span className="conversation-time">
                         {formatTime(conv.lastMessageAt)}
                       </span>
                     )}
                   </div>
                   {conv.lastMessage ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    <p className="conversation-preview">
                       {conv.lastMessage.sender.handle === currentUser?.handle
                         ? `You: ${conv.lastMessage.content}`
                         : conv.lastMessage.content}
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">No messages yet</p>
+                    <p className="conversation-preview">No messages yet</p>
                   )}
                 </div>
               </button>
@@ -475,21 +499,21 @@ export default function MessagesPage() {
       </div>
 
       {/* right section message */}
-      <div className="flex-1 flex flex-col w-full md:w-auto pb-20 md:pb-0">
+      <div className="messages-section">
         {selectedConversation ? (
           <>
             {/* header conversation */}
-            <div className="p-3 md:p-4 border-b border-gray-300 dark:border-[#2f3336] flex items-center gap-3 bg-white dark:bg-black">
+            <div className="message-header">
               {/* button buat balik di mobile */}
               <button
                 onClick={() => {
                   setSelectedConversation(null)
                   setShowConversationsList(true)
                 }}
-                className="md:hidden text-black dark:text-white hover:bg-gray-100 dark:hover:bg-[#2f3336] rounded-full p-2 transition -ml-2"
+                className="back-button"
                 aria-label="Back to conversations"
               >
-                <IoMdArrowBack className="w-5 h-5" />
+                <IoMdArrowBack className="back-icon" />
               </button>
               {selectedConversation.participant.profilePicture?.url ? (
                 <Image
@@ -497,29 +521,29 @@ export default function MessagesPage() {
                   alt={selectedConversation.participant.name}
                   width={40}
                   height={40}
-                  className="rounded-full object-cover"
+                  className="profile-image"
                 />
               ) : (
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
-                  <span className="text-black dark:text-white font-bold">
+                <div className="profile-avatar">
+                  <span className="profile-avatar-text">
                     {getInitial(selectedConversation.participant.name)}
                   </span>
                 </div>
               )}
-              <div>
-                <h2 className="font-bold text-black dark:text-white">{selectedConversation.participant.name}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">@{selectedConversation.participant.handle}</p>
+              <div className="message-header-info">
+                <h2>{selectedConversation.participant.name}</h2>
+                <p>@{selectedConversation.participant.handle}</p>
               </div>
             </div>
 
             {/* section message sesama user */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 pb-24 md:pb-4 bg-white dark:bg-black">
+            <div className="messages-list">
               {messages.map((message) => {
                 const isOwnMessage = message.sender._id === currentUser?._id
                 return (
                   <div
                     key={message._id}
-                    className={`flex gap-3 ${isOwnMessage ? "justify-end" : ""}`}
+                    className={`message-wrapper ${isOwnMessage ? "own" : ""}`}
                   >
                     {!isOwnMessage && (
                       <>
@@ -529,45 +553,39 @@ export default function MessagesPage() {
                             alt={message.sender.name}
                             width={40}
                             height={40}
-                            className="rounded-full object-cover shrink-0"
+                            className="profile-image"
                           />
                         ) : (
-                          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                            <span className="text-black dark:text-white font-bold text-sm">
+                          <div className="profile-avatar">
+                            <span className="profile-avatar-text">
                               {getInitial(message.sender.name)}
                             </span>
                           </div>
                         )}
                       </>
                     )}
-                    <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isOwnMessage ? "items-end" : ""}`}>
+                    <div className={`message-content-wrapper ${isOwnMessage ? "own" : ""}`}>
                       {!isOwnMessage && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <span className="message-meta">
                           {message.sender.name} · {formatTime(message.createdAt)}
                         </span>
                       )}
                       {isOwnMessage && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <span className="message-meta">
                           {formatTime(message.createdAt)}
                         </span>
                       )}
-                      <div
-                        className={`rounded-2xl px-4 py-2 ${
-                          isOwnMessage
-                            ? "bg-gray-200 dark:bg-white text-black"
-                            : "bg-gray-100 dark:bg-[#202327] text-black dark:text-white"
-                        }`}
-                      >
-                        <p className="text-[15px]">{message.content}</p>
+                      <div className={`message-bubble ${isOwnMessage ? "own" : "other"}`}>
+                        <p className="message-text">{message.content}</p>
                         {message.media && message.media.length > 0 && (
-                          <div className="mt-2">
+                          <div className="message-media">
                             {message.media[0].mediaType === "image" && (
                               <Image
                                 src={message.media[0].url}
                                 alt="Message media"
                                 width={300}
                                 height={200}
-                                className="rounded-lg object-cover"
+                                className="message-media-image"
                               />
                             )}
                           </div>
@@ -583,20 +601,20 @@ export default function MessagesPage() {
             {/* chat input */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 md:p-4 border-t border-gray-300 dark:border-[#2f3336] flex gap-2 md:gap-3 bg-white dark:bg-black"
+              className="message-form"
             >
               <input
                 type="text"
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="Start a message"
-                className="flex-1 bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-3 md:px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm md:text-base"
+                className="message-input"
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={!messageInput.trim() || sending}
-                className="bg-black dark:bg-white text-white dark:text-black font-bold px-4 md:px-6 py-2 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                className="send-button"
               >
                 {sending ? "Sending..." : "Send"}
               </button>
@@ -604,15 +622,14 @@ export default function MessagesPage() {
           </>
         ) : (
           // kalo belom ada message
-          <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 p-4 bg-white dark:bg-black">
-            <div className="text-center">
-              <p className="text-xl mb-2">Select a conversation</p>
-              <p className="text-sm">Choose a conversation from the list to start messaging</p>
+          <div className="empty-state">
+            <div className="empty-state-content">
+              <p className="empty-state-title">Select a conversation</p>
+              <p className="empty-state-text">Choose a conversation from the list to start messaging</p>
             </div>
           </div>
         )}
       </div>
-
     </div>
   )
 }
