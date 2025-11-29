@@ -5,6 +5,11 @@
     gap: 1.25rem;
     border-left: 1px solid #d1d5db;
     background-color: #ffffff;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 @media (min-width: 1280px) {

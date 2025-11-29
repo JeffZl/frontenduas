@@ -152,6 +152,19 @@
   align-items: center;
   font-size: 0.875rem;
   transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.action:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .action:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .reply:hover {
@@ -164,4 +177,12 @@
 
 .like:hover {
   color: #ef4444;
+}
+
+.action.active.like {
+  color: #ef4444;
+}
+
+.action.active.retweet {
+  color: #10b981;
 }

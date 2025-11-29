@@ -5,6 +5,8 @@
   color: black;
   max-width: 1200px;
   margin: 0 auto;
+  height: 100vh;
+  overflow: hidden;
 }
 
 :global(.dark) .container {
@@ -14,4 +16,7 @@
 
 .main {
   flex: 3;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

@@ -1,0 +1,849 @@
+.page,
+.container {
+  --bg-page: #ffffff;
+  --bg-card: #ffffff;
+  --bg-muted: #f7f9f9;
+  --border-color: #eff3f4;
+  --text-primary: #0f1419;
+  --text-secondary: #536471;
+  --accent: #1d9bf0;
+  --action-reply: #1d9bf0;
+  --action-retweet: #00ba7c;
+  --action-like: #f91880;
+
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+:global(.dark) .page,
+:global(.dark) .container {
+  --bg-page: #000000;
+  --bg-card: #16181c;
+  --bg-muted: #0a0f14;
+  --border-color: #2f3336;
+  --text-primary: #e7e9ea;
+  --text-secondary: #8b98a5;
+  --accent: #1d9bf0;
+  --action-reply: #1d9bf0;
+  --action-retweet: #00ba7c;
+  --action-like: #f91880;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-page);
+  z-index: 5;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerIconButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.headerIconButton:hover {
+  background-color: var(--bg-muted);
+}
+
+.backButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: var(--bg-muted);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+}
+
+.headerTitle,
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.headerSubtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.content {
+  padding: 1.5rem;
+  max-width: 720px;
+  width: 100%;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tweetDetail {
+  padding: 1.5rem;
+  max-width: 720px;
+  width: 100%;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tweetContent {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.stateCard {
+  border: 1px dashed var(--border-color);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--bg-card);
+}
+
+.stateTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.stateSubtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.tweetCard {
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.authorRow {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.avatar,
+.profilePic {
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.profilePicWrapper {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.profilePicPlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.handle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.avatarPlaceholder {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  background-color: var(--bg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarInitial {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.authorHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.authorInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.moreButton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.moreButton:hover {
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
+}
+
+.authorName {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.authorHandle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.tweetText {
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.mediaSingle,
+.mediaGrid {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background-color: #000;
+}
+
+.mediaSingle {
+  max-height: 520px;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background-color: #000;
+}
+
+.mediaContainer {
+  margin: 1rem 0;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background-color: #000;
+  max-width: 100%;
+}
+
+.mediaContainer img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mediaImage,
+.mediaVideo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mediaVideo {
+  background-color: #000;
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+}
+
+.mediaItem {
+  position: relative;
+  overflow: hidden;
+}
+
+.mediaItem .mediaImage,
+.mediaItem .mediaVideo {
+  height: 100%;
+  object-fit: cover;
+}
+
+.quotedTweet {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quotedHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quotedAvatar {
+  border-radius: 999px;
+}
+
+.quotedAvatarPlaceholder {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background-color: var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.quotedName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quotedHandle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.quotedContent {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.75rem 0;
+}
+
+.timestamp,
+.timeAndDate {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.views {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 0.5rem 0;
+}
+
+.metricsRow,
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9375rem;
+}
+
+.stats span {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.engagementMetrics {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.metricIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background-color: var(--bg-muted);
+  flex-shrink: 0;
+}
+
+.metricIcon {
+  color: var(--text-secondary);
+}
+
+.metricContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metricItem .metricValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.metricItem .metricLabel {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.metric {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+
+.metricValue,
+.count {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metricLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.actionsRow,
+.actionBar {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.actionButton:hover {
+  background-color: var(--bg-muted);
+}
+
+.actionIcon {
+  color: inherit;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.actionCount {
+  font-size: 0.875rem;
+  color: inherit;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.actionButton:hover .actionIcon,
+.actionButton:hover .actionCount {
+  color: var(--accent);
+}
+
+.actionButton.reply:hover {
+  background-color: rgba(29, 155, 240, 0.1);
+}
+
+.actionButton.reply:hover .actionIcon,
+.actionButton.reply:hover .actionCount {
+  color: var(--action-reply);
+}
+
+.actionButton.retweet:hover {
+  background-color: rgba(0, 186, 124, 0.1);
+}
+
+.actionButton.retweet:hover .actionIcon,
+.actionButton.retweet:hover .actionCount {
+  color: var(--action-retweet);
+}
+
+.actionButton.like:hover {
+  background-color: rgba(249, 24, 128, 0.1);
+}
+
+.actionButton.like:hover .actionIcon,
+.actionButton.like:hover .actionCount {
+  color: var(--action-like);
+}
+
+.actionButton.active .actionIcon,
+.actionButton.active .actionCount {
+  color: var(--action-like);
+}
+
+.actionButton.retweet.active .actionIcon,
+.actionButton.retweet.active .actionCount {
+  color: var(--action-retweet);
+}
+
+.actionButton.like.active .actionIcon,
+.actionButton.like.active .actionCount {
+  color: var(--action-like);
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: rgba(29, 155, 240, 0.12);
+  color: var(--action-reply);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.actionButton svg {
+  font-size: 1rem;
+}
+
+.replyAction {
+  background-color: rgba(29, 155, 240, 0.12);
+  border-color: rgba(29, 155, 240, 0.4);
+  color: var(--action-reply);
+}
+
+.retweetAction {
+  background-color: rgba(0, 186, 124, 0.12);
+  border-color: rgba(0, 186, 124, 0.4);
+  color: var(--action-retweet);
+}
+
+.likeAction {
+  background-color: rgba(249, 24, 128, 0.12);
+  border-color: rgba(249, 24, 128, 0.4);
+  color: var(--action-like);
+}
+
+.actionButton:hover {
+  opacity: 0.85;
+}
+
+.replyInputSection {
+  max-width: 720px;
+  width: 100%;
+  align-self: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.replyInputWrapper {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.replyProfilePic {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.replyProfileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.replyProfilePlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Shared placeholder style for consistency */
+.profilePicPlaceholder,
+.replyProfilePlaceholder {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.replyInputContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.replyInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.replyInput:focus {
+  border-color: var(--accent);
+}
+
+.replyInput::placeholder {
+  color: var(--text-secondary);
+}
+
+.replyButton {
+  align-self: flex-end;
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background-color: var(--accent);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.replyButton:hover:not(:disabled) {
+  background-color: #1a8cd8;
+}
+
+.replyButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.repliesSection {
+  max-width: 720px;
+  width: 100%;
+  align-self: center;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.emptyReplies,
+.noReplies {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.loadingContainer,
+.errorContainer {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+  max-width: 720px;
+  width: 100%;
+  align-self: center;
+}
+
+.loadingContainer {
+  font-size: 1.125rem;
+}
+
+.errorContainer {
+  color: #ef4444;
+  font-size: 1rem;
+}
+
+.repliesList {
+  display: flex;
+  flex-direction: column;
+}
+
+.repliesList :global(article) {
+  border-left: none;
+  border-right: none;
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .tweetDetail {
+    padding: 1rem;
+  }
+
+  .replyInputSection {
+    padding: 1rem;
+  }
+
+  .repliesSection {
+    padding: 0 1rem 1rem;
+  }
+
+  .metricsRow,
+  .stats {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .engagementMetrics {
+    gap: 1.5rem;
+  }
+
+  .metricItem {
+    gap: 0.5rem;
+  }
+
+  .metricIconWrapper {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .metricIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .metricItem .metricValue {
+    font-size: 1rem;
+  }
+
+  .metricItem .metricLabel {
+    font-size: 0.8125rem;
+  }
+
+  .actionsRow,
+  .actionBar {
+    gap: 0.5rem;
+    justify-content: space-between;
+  }
+
+  .actionButton {
+    padding: 0.5rem;
+    min-width: auto;
+  }
+
+  .actionCount {
+    display: none;
+  }
+
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .metaInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+

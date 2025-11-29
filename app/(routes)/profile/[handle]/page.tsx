@@ -23,18 +23,18 @@ interface Tweet {
         handle: string
         name: string
         profilePicture?: {
-        url: string
+            url: string
         }
     }
-    likesCount: number
-    retweetsCount: number
-    repliesCount: number
+    likesCount?: number
+    retweetsCount?: number
+    repliesCount?: number
     createdAt: string
     originalTweet?: Tweet
 }
 
 
-const Page = ({ params }: { params: { handle: string }}) => {
+const Page = ({ params }: { params: { handle: string } }) => {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -79,7 +79,7 @@ const Page = ({ params }: { params: { handle: string }}) => {
 
             {/* Profile details */}
             <div className="profile-details-section">
-                <div>   
+                <div>
                     {user?.profilePicture?.url ? (
                         <Image
                             src={user?.profilePicture?.url || "https://robohash.org/default.png"}
@@ -91,7 +91,7 @@ const Page = ({ params }: { params: { handle: string }}) => {
                     ) : (
                         <div className="absolute w-[120px] h-[120px] flex items-center justify-center rounded-full bg-gray-700 border-[4px] border-[var(--color-background)] top-[-60px] left-4 z-[100]">
                             <span className="text-white font-bold text-4xl">
-                            {user?.name?.[0]?.toUpperCase() || "?"}
+                                {user?.name?.[0]?.toUpperCase() || "?"}
                             </span>
                         </div>
                     )}
@@ -124,9 +124,10 @@ const Page = ({ params }: { params: { handle: string }}) => {
                 {user?.tweetsCount > 0 ? (
                     user.tweets.map((tweet: Tweet) => {
                         console.log(tweet)
-                        return(
-                        <TweetComponent key={tweet._id} tweet={tweet} />
-                    )})
+                        return (
+                            <TweetComponent key={tweet._id} tweet={tweet} />
+                        )
+                    })
                 ) : (
                     <div className="p-4 text-center text-gray-400">
                         No tweets yet
