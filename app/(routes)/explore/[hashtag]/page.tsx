@@ -20,12 +20,12 @@ interface Tweet {
         handle: string
         name: string
         profilePicture?: {
-        url: string
+            url: string
         }
     }
-    likesCount: number
-    retweetsCount: number
-    repliesCount: number
+    likesCount?: number
+    retweetsCount?: number
+    repliesCount?: number
     createdAt: string
     originalTweet?: Tweet
 }
@@ -40,7 +40,7 @@ const Page = () => {
 
     useEffect(() => {
         if (hashtag) {
-        fetchTweets()
+            fetchTweets()
         }
     }, [hashtag])
 
@@ -123,8 +123,8 @@ const Page = () => {
                 </div>
             ) : (
                 <div>
-                    {tweets.map((tweetData) => ( 
-                        <TweetComponent key={tweetData._id} tweet={tweetData} /> 
+                    {tweets.map((tweetData) => (
+                        <TweetComponent key={tweetData._id} tweet={tweetData} />
                     ))}
                 </div>
             )}

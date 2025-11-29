@@ -3,11 +3,15 @@
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 100vh;
+  height: 100vh;
   border-right: 1px solid #d1d5db;
   padding: 1rem;
   width: 250px;
   background-color: white;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 :global(.dark) .sidebar {
