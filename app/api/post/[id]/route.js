@@ -96,8 +96,8 @@ export async function GET(req, { params }) {
     const userId = decoded.id.toString()
     const likesArray = Array.isArray(tweet.likes) ? tweet.likes : []
     const retweetsArray = Array.isArray(tweet.retweets) ? tweet.retweets : []
-    const isLiked = likesArray.some((likeId: any) => likeId?.toString() === userId) || false
-    const isRetweeted = retweetsArray.some((retweetId: any) => retweetId?.toString() === userId) || false
+    const isLiked = likesArray.some((likeId) => likeId?.toString() === userId) || false
+    const isRetweeted = retweetsArray.some((retweetId) => retweetId?.toString() === userId) || false
 
     return Response.json(
       {

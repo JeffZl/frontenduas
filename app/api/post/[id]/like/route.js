@@ -10,7 +10,7 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is required")
 }
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req, { params }) {
   try {
     await connectToDB()
 
@@ -21,7 +21,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       return Response.json({ error: "Not authenticated" }, { status: 401 })
     }
 
-    let decoded: any
+    let decoded
     try {
       decoded = jwt.verify(token, JWT_SECRET)
     } catch (err) {
@@ -44,31 +44,43 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
 
     const userId = decoded.id
-    const isRetweeted = tweet.retweets.includes(userId)
+    const isLiked = tweet.likes.includes(userId)
 
-    if (isRetweeted) {
-      // Unretweet
-      tweet.retweets = tweet.retweets.filter((retweetId: any) => retweetId.toString() !== userId)
-      tweet.retweetsCount = Math.max(0, tweet.retweetsCount - 1)
+    if (isLiked) {
+      // Unlike
+      tweet.likes = tweet.likes.filter((likeId) => likeId.toString() !== userId)
+      tweet.likesCount = Math.max(0, tweet.likesCount - 1)
+      
+      const user = await User.findById(userId)
+      if (user) {
+        user.likesCount = Math.max(0, user.likesCount - 1)
+        await user.save()
+      }
     } else {
-      // Retweet
-      tweet.retweets.push(userId)
-      tweet.retweetsCount += 1
+      // Like
+      tweet.likes.push(userId)
+      tweet.likesCount += 1
+      
+      const user = await User.findById(userId)
+      if (user) {
+        user.likesCount += 1
+        await user.save()
+      }
     }
 
     await tweet.save()
 
     return Response.json(
       {
-        message: isRetweeted ? "Post unretweeted" : "Post retweeted",
-        retweetsCount: tweet.retweetsCount,
-        isRetweeted: !isRetweeted,
+        message: isLiked ? "Post unliked" : "Post liked",
+        likesCount: tweet.likesCount,
+        isLiked: !isLiked,
       },
       { status: 200 }
     )
   } catch (error) {
-    console.error("Error toggling retweet:", error)
-    return Response.json({ error: "Failed to toggle retweet" }, { status: 500 })
+    console.error("Error toggling like:", error)
+    return Response.json({ error: "Failed to toggle like" }, { status: 500 })
   }
 }
 
