@@ -107,12 +107,10 @@ export default function NotificationsPage() {
           if (!conv.lastMessage) return
           
           // Pastikan perbandingan ID benar (handle string comparison)
-          const senderId = typeof conv.lastMessage.sender._id === 'object' 
-            ? conv.lastMessage.sender._id.toString() 
-            : conv.lastMessage.sender._id
-          const userId = typeof currentUser._id === 'object' 
-            ? currentUser._id.toString() 
-            : currentUser._id
+          // Convert both IDs to strings safely
+          const senderId = conv.lastMessage.sender._id?.toString?.() || conv.lastMessage.sender._id;
+          const userId = currentUser._id?.toString?.() || currentUser._id;
+
           
           if (senderId === userId) return // Skip pesan dari current user
           
