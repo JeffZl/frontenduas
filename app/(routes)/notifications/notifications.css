@@ -1,0 +1,243 @@
+/* Notifications Page Styles */
+
+.notifications-page {
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.dark .notifications-page {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.notifications-header {
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 10;
+}
+
+.dark .notifications-header {
+  border-bottom-color: #2f3336;
+  background-color: #000000;
+}
+
+.notifications-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.dark .notifications-header h1 {
+  color: #ffffff;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Notification Item */
+.notification {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  border-bottom: 1px solid #2f3336;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-radius: 12px;
+  margin: 8px;
+  background-color: #ffffff;
+}
+
+.dark .notification {
+  background-color: #000000;
+  border-bottom-color: #2f3336;
+}
+
+.notification:hover {
+  background-color: #f3f4f6;
+}
+
+.dark .notification:hover {
+  background-color: #1a1a1a;
+}
+
+/* Unread notifications */
+.notification.unread {
+  background-color: #f9fafb;
+  position: relative;
+}
+
+.dark .notification.unread {
+  background-color: #16181c;
+}
+
+.notification.unread:hover {
+  background-color: #f3f4f6;
+}
+
+.dark .notification.unread:hover {
+  background-color: #1d1f23;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 18px;
+  left: 32px;
+  width: 8px;
+  height: 8px;
+  background-color: #1d9bf0;
+  border-radius: 50%;
+}
+
+/* Icon & text */
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #1d9bf0;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-content .type {
+  font-weight: 700;
+  font-size: 14px;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+.dark .notification-content .type {
+  color: #ffffff;
+}
+
+.notification-content .message {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.dark .notification-content .message {
+  color: #9ca3af;
+}
+
+.notification-content .time {
+  color: #71767b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.dark .notification-content .time {
+  color: #71767b;
+}
+
+/* Loading State */
+.notifications-loading {
+  padding: 1rem;
+}
+
+.notification-skeleton {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.notification-skeleton-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #d1d5db;
+  border-radius: 50%;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.dark .notification-skeleton-icon {
+  background-color: #374151;
+}
+
+.notification-skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-skeleton-line {
+  height: 14px;
+  background-color: #d1d5db;
+  border-radius: 4px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.dark .notification-skeleton-line {
+  background-color: #374151;
+}
+
+.notification-skeleton-line.short {
+  width: 60%;
+}
+
+.notification-skeleton-line:first-child {
+  width: 40%;
+}
+
+/* Empty State */
+.notifications-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.dark .notifications-empty {
+  color: #9ca3af;
+}
+
+.notifications-empty-subtext {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  color: #9ca3af;
+}
+
+.dark .notifications-empty-subtext {
+  color: #6b7280;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notifications-header {
+    padding: 0.75rem;
+  }
+
+  .notification {
+    margin: 4px;
+    padding: 10px;
+  }
+}
+
