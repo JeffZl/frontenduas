@@ -3,7 +3,7 @@
 import SearchComponent from "@/components/SearchComponent";
 import SearchResult from "@/components/SearchResult";
 import Image from "next/image"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
 
@@ -68,24 +68,25 @@ export default function MessagesPage() {
   const [messageInput, setMessageInput] = useState("")
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [currentUser, setCurrentUser] = useState<{ _id: string; handle: string } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showSearch, setShowSearch] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchUser[]>([])
   const [searching, setSearching] = useState(false)
   const [showConversationsList, setShowConversationsList] = useState(true)
+  const previousConversationsRef = useRef<Conversation[]>([])
 
   useEffect(() => {
     fetchCurrentUser()
     fetchConversations()
-    
+
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setShowConversationsList(true)
       }
     }
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -109,7 +110,7 @@ export default function MessagesPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  // looping tiap 3 detik buat tau ada chat terbaru
+  // looping tiap 3 detik buat tau ada chat terbaru di conversation yang dipilih
   useEffect(() => {
     if (!selectedConversation) return
 
@@ -147,21 +148,62 @@ export default function MessagesPage() {
     }
   }
 
-  const fetchConversations = async () => {
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return "now"
+    if (diffMins < 60) return `${diffMins}m`
+    if (diffHours < 24) return `${diffHours}h`
+    if (diffDays < 7) return `${diffDays}d`
+    return date.toLocaleDateString()
+  }
+
+
+  const fetchConversations = useCallback(async (silent = false) => {
     try {
       const res = await fetch("/api/conversations", {
         credentials: "include",
       })
       if (res.ok) {
         const data = await res.json()
-        setConversations(data.conversations || [])
+        const newConversations = data.conversations || []
+
+        setConversations(newConversations)
+        previousConversationsRef.current = newConversations
       }
     } catch (error) {
-      console.error("Error fetching conversations:", error)
+      if (!silent) {
+        console.error("Error fetching conversations:", error)
+      }
     } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      }
     }
-  }
+  }, [])
+
+  // Poll untuk semua conversations untuk detect new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations(true) // silent fetch
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [fetchConversations])
+
+  // Poll untuk semua conversations untuk detect new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations(true) // silent fetch
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [fetchConversations])
 
   const fetchMessages = async (conversationId: string, silent = false) => {
     try {
@@ -223,21 +265,6 @@ export default function MessagesPage() {
     }
   }
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return "now"
-    if (diffMins < 60) return `${diffMins}m`
-    if (diffHours < 24) return `${diffHours}h`
-    if (diffDays < 7) return `${diffDays}d`
-    return date.toLocaleDateString()
-  }
-
   const getInitial = (name?: string) => {
     return name?.[0]?.toUpperCase() || "?"
   }
@@ -282,9 +309,9 @@ export default function MessagesPage() {
           lastMessageAt: data.conversation.lastMessageAt,
         }
         setSelectedConversation(newConversation)
-        
+
         await fetchConversations()
-        
+
         setShowSearch(false)
         setSearchQuery("")
         setSearchResults([])
@@ -295,6 +322,7 @@ export default function MessagesPage() {
       console.error("Error starting conversation:", error)
     }
   }
+
 
   return (
     <div className={styles.container}>
