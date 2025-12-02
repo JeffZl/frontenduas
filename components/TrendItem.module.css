@@ -1,0 +1,51 @@
+.trendItem {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.trendItem:hover {
+  background-color: #f3f4f6;
+}
+
+:global(.dark) .trendItem:hover {
+  background-color: #1a1a1a;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.topic {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  display: block;
+}
+
+:global(.dark) .topic {
+  color: #9ca3af;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 1.125rem;
+  margin: 0.25rem 0;
+  color: black;
+}
+
+:global(.dark) .title {
+  color: white;
+}
+
+.postCount {
+  color: #6b7280;
+  font-size: 0.875rem;
+  display: block;
+}
+
+:global(.dark) .postCount {
+  color: #9ca3af;
+}

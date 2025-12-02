@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import UserItem from './UserItem';
+import styles from './Rightbar.module.css';
 
 interface Suggestion {
     _id: string;
@@ -35,31 +36,31 @@ export default function Rightbar() {
     }, []);
 
     return (
-        <section className="p-5 flex-col gap-5 hidden xl:flex border-l border-gray-300 dark:border-[#2f3336] flex-[1.5] dark:bg-black bg-white">
-            <div className="border border-gray-300 dark:border-[#2f3336] rounded-2xl p-4 bg-white dark:bg-black">
-                <h3 className="text-lg font-bold mb-2.5 text-black dark:text-white">Who to follow</h3>
-                
+        <section className={styles.rightbar}>
+            <div className={styles.card}>
+                <h3 className={styles.title}>Who to follow</h3>
+
                 {loading ? (
-                    <div className="flex flex-col gap-3">
+                    <div className={styles.skeletonList}>
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2.5">
-                                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                                    <div className="grow">
-                                        <div className="w-20 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-1" />
-                                        <div className="w-24 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+                            <div key={i} className={styles.skeletonItem}>
+                                <div className={styles.skeletonLeft}>
+                                    <div className={styles.avatarPulse} />
+                                    <div className={styles.nameGroup}>
+                                        <div className={styles.textPulseShort} />
+                                        <div className={styles.textPulseLong} />
                                     </div>
                                 </div>
-                                <div className="w-20 h-8 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
+                                <div className={styles.btnPulse} />
                             </div>
                         ))}
                     </div>
                 ) : suggestions.length === 0 ? (
-                    <div className="py-4 text-center text-gray-600 dark:text-gray-500 text-sm">
+                    <div className={styles.noSuggest}>
                         <p>No suggestions available</p>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-3">
+                    <div className={styles.list}>
                         {suggestions.map(({ name, avatar, handle, _id }) => (
                             <UserItem key={_id} name={name} avatar={avatar} handle={handle} />
                         ))}

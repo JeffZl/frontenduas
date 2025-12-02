@@ -1,0 +1,188 @@
+.tweetArticle {
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+  transition: background-color 0.2s ease;
+}
+
+:global(.dark) .tweetArticle {
+  border-color: #2f3336;
+}
+
+.tweetArticle:hover {
+  background-color: #f9f9f9;
+}
+
+:global(.dark) .tweetArticle:hover {
+  background-color: #0a0a0a;
+}
+
+.tweetBody {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.avatar {
+  border-radius: 9999px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.avatarFallback {
+  width: 48px;
+  height: 48px;
+  background: #d1d5db;
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+:global(.dark) .avatarFallback {
+  background: #4b5563;
+}
+
+.avatarFallback span {
+  font-weight: bold;
+  color: black;
+}
+
+:global(.dark) .avatarFallback span {
+  color: white;
+}
+
+.tweetContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.tweetHeader {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.name {
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+}
+
+:global(.dark) .name {
+  color: white;
+}
+
+.handle,
+.time {
+  color: #6b7280;
+}
+
+:global(.dark) .handle,
+:global(.dark) .time {
+  color: #9ca3af;
+}
+
+.text {
+  color: black;
+  margin-bottom: 0.75rem;
+  white-space: pre-wrap;
+}
+
+:global(.dark) .text {
+  color: white;
+}
+
+.mediaWrapper {
+  margin-bottom: 0.75rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.mediaSingle {
+  position: relative;
+}
+
+.mediaVideo {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  background: black;
+}
+
+.mediaImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+.mediaGridItem {
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+
+.mediaGridImage {
+  object-fit: cover;
+}
+
+.tweetActions {
+  display: flex;
+  justify-content: space-between;
+  max-width: 320px;
+  margin-top: 0.75rem;
+  color: #6b7280;
+}
+
+:global(.dark) .tweetActions {
+  color: #9ca3af;
+}
+
+.action {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.action:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .action:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.reply:hover {
+  color: #3b82f6;
+}
+
+.retweet:hover {
+  color: #10b981;
+}
+
+.like:hover {
+  color: #ef4444;
+}
+
+.action.active.like {
+  color: #ef4444;
+}
+
+.action.active.retweet {
+  color: #10b981;
+}

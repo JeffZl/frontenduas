@@ -1,27 +1,47 @@
 import { connectToDB } from "@/lib/mongodb"
 import User from "@/models/User"
+import Tweet from "@/models/Tweet"
+
 
 export async function GET(req, { params }) {
   try {
-    await connectToDB()
-    const { handle } = params
+    await connectToDB();
+
+    const { handle } = await params;
 
     if (!handle) {
-      return Response.json({ error: "Missing handle parameter" }, { status: 400 })
+      return Response.json(
+        { error: "Missing handle parameter" },
+        { status: 400 }
+      );
     }
 
     const user = await User.findOne({ handle: handle.toLowerCase() })
       .select(
-        "handle name bio profilePicture coverPicture followersCount followingCount tweetsCount likesCount createdAt"
+        "handle name bio profilePicture coverPicture followersCount followingCount tweetsCount likesCount createdAt tweets"
       )
-      .lean()
+      .lean();
 
-    if (!user) return Response.json({ error: "User not found" }, { status: 404 })
+    if (!user) {
+      return Response.json({ error: "User not found" }, { status: 404 });
+    }
 
-    return Response.json({ user }, { status: 200 })
+    const tweets = await Tweet.find({ _id: { $in: user.tweets } })
+      .sort({ createdAt: -1 }) // show most recent first
+      .populate("author", "handle name profilePicture")
+      .lean();
+
+    return Response.json(
+      { user: { ...user, tweets } },
+      { status: 200 }
+    );
+
   } catch (error) {
-    console.error("Error fetching user profile:", error)
-    return Response.json({ error: "Failed to fetch user profile" }, { status: 500 })
+    console.error("Error fetching user profile:", error);
+    return Response.json(
+      { error: "Failed to fetch user profile" },
+      { status: 500 }
+    );
   }
 }
 

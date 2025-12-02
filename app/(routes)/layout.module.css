@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  color: black;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+:global(.dark) .container {
+  background-color: black;
+  color: white;
+}
+
+.main {
+  flex: 3;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
