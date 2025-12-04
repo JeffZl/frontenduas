@@ -64,7 +64,6 @@ export async function GET(req) {
       })
       .lean()
 
-    // Check if current user has liked/retweeted each tweet
     const userId = decoded.id.toString()
     const tweetsWithStatus = tweets.map(tweet => {
       const likesArray = Array.isArray(tweet.likes) ? tweet.likes : []
@@ -133,7 +132,7 @@ export async function POST(req) {
     user.tweetsCount += 1
     await user.save()
 
-    // Update repliesCount if this is a reply
+
     if (parentTweet) {
       const parent = await Tweet.findById(parentTweet)
       if (parent) {
@@ -143,7 +142,6 @@ export async function POST(req) {
       }
     }
 
-    // update jumlah trend di hashtag
     if (hashtags && Array.isArray(hashtags) && hashtags.length > 0) {
       for (const hashtag of hashtags) {
         const cleanHashtag = hashtag.replace(/^#/, '').toLowerCase();

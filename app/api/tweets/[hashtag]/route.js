@@ -34,10 +34,8 @@ export async function GET(req, { params }) {
     const limit = parseInt(searchParams.get("limit") || "20")
     const skip = (page - 1) * limit
 
-    // lower case terus hapus hashtag kalo ada (normalisasi)
     const normalizedHashtag = hashtag.replace(/^#/, '').toLowerCase()
 
-    // cari tweet yang ada hashtagnya
     const tweets = await Tweet.find({
       hashtags: { $regex: new RegExp(`^#?${normalizedHashtag}$`, "i") },
       isDeleted: false,

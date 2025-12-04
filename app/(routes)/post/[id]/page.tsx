@@ -2,12 +2,11 @@
 
 import TweetComponent from "@/components/TweetComponent"
 import Image from "next/image"
-import { useRouter, useParams } from "next/navigation" // Tambahkan useParams
+import { useRouter, useParams } from "next/navigation" 
 import { useEffect, useState } from "react"
 import { FiArrowLeft, FiHeart, FiMessageCircle, FiRepeat, FiMoreHorizontal } from "react-icons/fi"
-import styles from "./style.module.css" // Pastikan file CSS module ini ada
+import styles from "./style.module.css"
 
-// --- INTERFACE DEFINITIONS (TETAP SAMA) ---
 
 interface Media {
   url: string
@@ -48,7 +47,6 @@ interface QuoteResponse {
   error?: string
 }
 
-// --- UTILITY FUNCTIONS ---
 
 const formatRelativeTime = (dateString: string) => {
   const date = new Date(dateString)
@@ -62,7 +60,6 @@ const formatRelativeTime = (dateString: string) => {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
 }
 
-// Fungsi ini dikoreksi dan dilengkap
 const formatAbsoluteTime = (dateString: string) => {
   const date = new Date(dateString)
   const time = date.toLocaleString(undefined, {
@@ -78,15 +75,14 @@ const formatAbsoluteTime = (dateString: string) => {
   return `${time} · ${datePart}`
 }
 
-// --- MAIN COMPONENT ---
 
-// Ambil ID dari params menggunakan useParams hook
+
+
 const PostDetailPage = () => {
   const router = useRouter()
   const params = useParams()
-  const tweetId = params?.id as string // Ambil ID dari useParams
+  const tweetId = params?.id as string
   
-  // State untuk menyimpan data tweet dan status loading/error
   const [tweetData, setTweetData] = useState<Tweet | null>(null)
   const [replies, setReplies] = useState<Tweet[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -97,12 +93,12 @@ const PostDetailPage = () => {
   const [isLiked, setIsLiked] = useState(false)
   const [isRetweeted, setIsRetweeted] = useState(false)
 
-  // Fungsi untuk mengambil data tweet dan replies
+
   const fetchTweetData = async (id: string) => {
     setIsLoading(true)
     setError(null)
     try {
-      // Fetch dari API endpoint post
+
       const response = await fetch(`/api/post/${id}`)
       if (!response.ok) {
         throw new Error("Failed to fetch tweet details.")
@@ -115,8 +111,7 @@ const PostDetailPage = () => {
 
       setTweetData(data.tweet || null)
       setReplies(data.replies || [])
-      
-      // Set like and retweet status
+
       if (data.tweet) {
         setIsLiked(data.tweet.isLiked || false)
         setIsRetweeted(data.tweet.isRetweeted || false)
@@ -129,14 +124,13 @@ const PostDetailPage = () => {
     }
   }
 
-  // Fetch current user
+
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const res = await fetch("/api/user/me", { credentials: "include" })
         if (res.ok) {
           const data = await res.json()
-          // API returns { user: {...} }, so we need to extract user
           setCurrentUser(data.user || data)
         }
       } catch (err) {
@@ -146,14 +140,12 @@ const PostDetailPage = () => {
     fetchCurrentUser()
   }, [])
 
-  // Effect untuk menjalankan fetch data saat komponen dimuat atau ID berubah
   useEffect(() => {
     if (tweetId) {
       fetchTweetData(tweetId)
     }
   }, [tweetId])
 
-  // Handle like/unlike
   const handleLike = async () => {
     if (!tweetId) return
 
@@ -178,7 +170,6 @@ const PostDetailPage = () => {
     }
   }
 
-  // Handle retweet/unretweet
   const handleRetweet = async () => {
     if (!tweetId) return
 
@@ -203,7 +194,6 @@ const PostDetailPage = () => {
     }
   }
 
-  // Handle reply submission
   const handleReply = async () => {
     if (!replyContent.trim() || !tweetId || isReplying) return
 
@@ -221,7 +211,6 @@ const PostDetailPage = () => {
 
       if (res.ok) {
         setReplyContent("")
-        // Refresh replies and update count
         await fetchTweetData(tweetId)
       }
     } catch (err) {
@@ -232,12 +221,10 @@ const PostDetailPage = () => {
   }
 
 
-  // Handler untuk navigasi kembali
   const handleGoBack = () => {
     router.back()
   }
 
-  // Tampilan Loading
   if (isLoading) {
     return (
       <main className={styles.container}>
@@ -259,7 +246,6 @@ const PostDetailPage = () => {
     )
   }
 
-  // Tampilan Error
   if (error || !tweetData) {
     return (
       <main className={styles.container}>
@@ -300,7 +286,6 @@ const PostDetailPage = () => {
         </div>
       </header>
 
-      {/* Bagian Detail Tweet Utama */}
       <section className={styles.tweetDetail}>
         {/* Author Info */}
         <div className={styles.authorHeader}>
@@ -335,10 +320,9 @@ const PostDetailPage = () => {
         {/* Tweet Content */}
         {tweet.content && <p className={styles.tweetContent}>{tweet.content}</p>}
 
-        {/* Media (Jika ada) */}
+        {/* Media */}
         {tweet.media && tweet.media.length > 0 && (
           <div className={styles.mediaContainer}>
-            {/* Hanya tampilkan media pertama sebagai contoh */}
             <Image 
               src={tweet.media[0].url} 
               alt={tweet.media[0].altText || "Tweet media"} 
@@ -359,7 +343,6 @@ const PostDetailPage = () => {
 
         <hr className={styles.divider} />
 
-        {/* Engagement Metrics */}
         <div className={styles.engagementMetrics}>
           <div className={styles.metricItem}>
             <div className={styles.metricIconWrapper}>
@@ -479,7 +462,7 @@ const PostDetailPage = () => {
         </div>
       </section>
 
-      {/* Bagian Replies/Komentar */}
+      {/* BagianKomentar */}
       <section className={styles.repliesSection}>
         {replies.length > 0 ? (
           replies.map((reply) => (
