@@ -1,19 +1,11 @@
 .tweetArticle {
   padding: 1rem;
-  border-bottom: 1px solid #d1d5db;
+  border-bottom: 1px solid var(--color-border);
   transition: background-color 0.2s ease;
 }
 
-:global(.dark) .tweetArticle {
-  border-color: #2f3336;
-}
-
 .tweetArticle:hover {
-  background-color: #f9f9f9;
-}
-
-:global(.dark) .tweetArticle:hover {
-  background-color: #0a0a0a;
+  background-color: var(--color-surface);
 }
 
 .tweetBody {
@@ -30,7 +22,7 @@
 .avatarFallback {
   width: 48px;
   height: 48px;
-  background: #d1d5db;
+  background: var(--skeleton-bg);
   border-radius: 9999px;
   display: flex;
   justify-content: center;
@@ -38,17 +30,9 @@
   cursor: pointer;
 }
 
-:global(.dark) .avatarFallback {
-  background: #4b5563;
-}
-
 .avatarFallback span {
   font-weight: bold;
-  color: black;
-}
-
-:global(.dark) .avatarFallback span {
-  color: white;
+  color: var(--foreground);
 }
 
 .tweetContent {
@@ -64,7 +48,7 @@
 
 .name {
   font-weight: bold;
-  color: black;
+  color: var(--foreground);
   text-decoration: none;
 }
 
@@ -72,29 +56,16 @@
   text-decoration: underline;
 }
 
-:global(.dark) .name {
-  color: white;
-}
-
 .handle,
 .time {
-  color: #6b7280;
-}
-
-:global(.dark) .handle,
-:global(.dark) .time {
-  color: #9ca3af;
+  color: var(--muted-text);
 }
 
 .text {
-  color: black;
+  color: var(--foreground);
   margin-bottom: 0.75rem;
   margin-top: 0.5rem;
   white-space: pre-wrap;
-}
-
-:global(.dark) .text {
-  color: white;
 }
 
 .mediaWrapper {
@@ -140,11 +111,7 @@
   justify-content: space-between;
   max-width: 320px;
   margin-top: 0.75rem;
-  color: #6b7280;
-}
-
-:global(.dark) .tweetActions {
-  color: #9ca3af;
+  color: var(--muted-text);
 }
 
 .action {
@@ -158,18 +125,15 @@
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
+  color: inherit;
 }
 
 .action:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-:global(.dark) .action:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-surface);
 }
 
 .reply:hover {
-  color: #3b82f6;
+  color: var(--primary-color);
 }
 
 .retweet:hover {
@@ -177,11 +141,11 @@
 }
 
 .like:hover {
-  color: #ef4444;
+  color: var(--error-color);
 }
 
 .action.active.like {
-  color: #ef4444;
+  color: var(--error-color);
 }
 
 .action.active.retweet {
