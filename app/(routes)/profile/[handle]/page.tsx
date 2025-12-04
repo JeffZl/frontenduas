@@ -279,14 +279,7 @@ const Page = ({ params }: { params: Promise<{ handle: string }> }) => {
                         priority
                     />
                 ) : (
-                    <Image
-                        src="/icons/banner.jpg"
-                        alt="Banner"
-                        fill
-                        className={styles.bannerImage}
-                        sizes="600px"
-                        priority
-                    />
+                    <div className={styles.bannerFallback} />
                 )}
             </div>
 
