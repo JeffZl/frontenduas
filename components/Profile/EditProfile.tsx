@@ -1,8 +1,15 @@
 import React from 'react';
 
-export default function EditProfileButton() {
+interface EditProfileButtonProps {
+    onClick: () => void;
+}
+
+export default function EditProfileButton({ onClick }: EditProfileButtonProps) {
     return (
-        <button className="edit-button">
+        <button 
+            className="edit-button"
+            onClick={onClick}
+        >
             Edit Profile
         </button>
     );
