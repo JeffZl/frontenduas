@@ -1,17 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import styles from './page.module.css';
 
 const TermsAndConditions: React.FC = () => {
   const router = useRouter();
 
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-in-out',
+    });
+  }, []);
 
   return (
     <div className={styles.main}>
-      <div className={styles.card}>
+      <div className={styles.card} data-aos="fade-up">
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.svg" 
+            alt="Cirqulate Logo" 
+            width={60} 
+            height={60}
+            priority
+          />
+        </div>
         {/* Back Link */}
         <Link
           href="/sign-up" 

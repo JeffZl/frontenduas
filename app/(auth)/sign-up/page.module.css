@@ -20,6 +20,13 @@
   box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.2);
 }
 
+/* Logo container */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
 /* Progress indicators */
 .progressContainer {
   display: flex;
@@ -275,6 +282,29 @@
 
 .responseMessageError {
   color: #ef4444;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Checkbox */

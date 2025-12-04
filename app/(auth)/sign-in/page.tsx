@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiEye as EyeOff, FiEyeOff as Eye } from "react-icons/fi"
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import styles from './page.module.css';
 
 const SignInPage = () => {
@@ -16,6 +19,14 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("")
   const [isSignInValid, setIsSignInValid] = useState(false)
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-in-out',
+    });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,9 +53,8 @@ const SignInPage = () => {
     }
 
     setIsSignInValid(true)
-    setError("Sign In Success! Redirecting in 3 seconds.")
-    setIsLoading(false)
-    setTimeout(() => router.push("/"), 3000);
+    setError("Sign In Success! Redirecting...")
+    setTimeout(() => router.push("/"), 2000);
   };
 
 
@@ -52,7 +62,16 @@ const SignInPage = () => {
 
   return (
     <main className={styles.main}>
-      <div className={styles.card}>
+      <div className={styles.card} data-aos="fade-up">
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.svg" 
+            alt="Cirqulate Logo" 
+            width={60} 
+            height={60}
+            priority
+          />
+        </div>
         <div className={styles.titleSection}>
           <h1 className={styles.title}>Sign-In To Your Account</h1>
           <p className={styles.description}>

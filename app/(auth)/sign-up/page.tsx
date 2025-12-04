@@ -2,13 +2,17 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiEye as EyeOff, FiEyeOff as Eye } from "react-icons/fi";
 import { useRouter } from 'next/navigation';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import styles from './page.module.css';
 
 const SignUpPage = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -30,6 +34,7 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resMessage, setResMessage] = useState("");
   const [isSignUpValid, setIsSignUpValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -46,6 +51,44 @@ const SignUpPage = () => {
   ], []);
 
   const days = useMemo(() => Array.from({ length: 31 }, (_, i) => i + 1), []);
+
+  useEffect(() => {
+    setIsMounted(true);
+    
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-in-out',
+    });
+
+    // Load saved form data from localStorage
+    const savedData = localStorage.getItem('signUpFormData');
+    const savedStep = localStorage.getItem('signUpStep');
+    const savedDay = localStorage.getItem('signUpDay');
+    const savedMonth = localStorage.getItem('signUpMonth');
+    const savedYear = localStorage.getItem('signUpYear');
+
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+    if (savedStep) {
+      setStep(parseInt(savedStep));
+    }
+    if (savedDay) setDay(savedDay);
+    if (savedMonth) setMonth(savedMonth);
+    if (savedYear) setYear(savedYear);
+  }, []);
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('signUpFormData', JSON.stringify(formData));
+      localStorage.setItem('signUpStep', step.toString());
+      localStorage.setItem('signUpDay', day);
+      localStorage.setItem('signUpMonth', month);
+      localStorage.setItem('signUpYear', year);
+    }
+  }, [formData, step, day, month, year, isMounted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -114,8 +157,11 @@ const SignUpPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isStep5Valid) return;
-    console.log(`${baseUrl}/api/auth/sign-up`)
+    if (!isStep5Valid || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    setResMessage("");
+    
     fetch(`/api/auth/sign-up`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -133,21 +179,42 @@ const SignUpPage = () => {
         if (!res.ok) {
           throw new Error(data.error || 'Sign up failed, please try again!');
         }
-        console.log('Sign up success!');
-        setResMessage("Sign Up Success! You will be redirected in 3 seconds");
+        setResMessage("Sign Up Success! Redirecting...");
         setIsSignUpValid(true);
-        setTimeout(() => router.push("/"), 3000);
+        
+        // Clear localStorage after successful sign up
+        localStorage.removeItem('signUpFormData');
+        localStorage.removeItem('signUpStep');
+        localStorage.removeItem('signUpDay');
+        localStorage.removeItem('signUpMonth');
+        localStorage.removeItem('signUpYear');
+        
+        setTimeout(() => router.push("/"), 2000);
       })
       .catch(error => {
         console.error('Error:', error);
         setIsSignUpValid(false);
         setResMessage(error.message || "Sign Up Error, Please try again!");
+        setIsSubmitting(false);
       });
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <main className={styles.main}>
-      <div className={styles.card}>
+      <div className={styles.card} data-aos="fade-up">
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.svg" 
+            alt="Cirqulate Logo" 
+            width={60} 
+            height={60}
+            priority
+          />
+        </div>
         {/* Update progress indicators to show 5 steps */}
         <div className={styles.progressContainer}>
           {[1, 2, 3, 4, 5].map((s) => (
@@ -176,7 +243,6 @@ const SignUpPage = () => {
                   required 
                   className={styles.input} 
                   placeholder="Input your full name" 
-                  suppressHydrationWarning
                 />
               </div>
 
@@ -218,7 +284,7 @@ const SignUpPage = () => {
           {step === 2 && (
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Verify Your Age</h2>
-              <p className={styles.sectionDescription}>
+              <p className={styles.sectionDescriptionCenter}>
                 This information will not be displayed publicly. It is used to verify your age.
               </p>
 
@@ -507,24 +573,34 @@ const SignUpPage = () => {
                 <p className={styles.errorMessage}>Secret words must be different.</p>
               )}
 
-              <div className={`${styles.responseMessage} ${isSignUpValid ? styles.responseMessageSuccess : styles.responseMessageError}`}>
-                {resMessage}
-              </div>
+              {resMessage && (
+                <div className={`${styles.responseMessage} ${isSignUpValid ? styles.responseMessageSuccess : styles.responseMessageError}`}>
+                  {resMessage}
+                </div>
+              )}
               
               <div className={styles.buttonGroup}>
                 <button 
                   type="button" 
                   onClick={prevStep} 
                   className={`${styles.button} ${styles.buttonSecondary}`}
+                  disabled={isSubmitting}
                 >
                   Back
                 </button>
                 <button 
                   type="submit" 
-                  disabled={!isStep5Valid} 
+                  disabled={!isStep5Valid || isSubmitting} 
                   className={`${styles.button} ${styles.buttonSuccess}`}
                 >
-                  Sign Up
+                  {isSubmitting ? (
+                    <div className={styles.loadingContainer}>
+                      <div className={styles.spinner}></div>
+                      Signing Up...
+                    </div>
+                  ) : (
+                    'Sign Up'
+                  )}
                 </button>
               </div>
             </section>

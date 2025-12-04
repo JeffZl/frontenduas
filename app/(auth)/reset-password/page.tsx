@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FiEye as EyeOff, FiEyeOff as Eye } from "react-icons/fi"
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import styles from './page.module.css';
 
 const ResetPasswordPage = () => {
@@ -21,6 +24,14 @@ const ResetPasswordPage = () => {
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-in-out',
+    });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -137,7 +148,16 @@ const ResetPasswordPage = () => {
 
   return (
     <main className={styles.main}>
-      <div className={styles.card}>
+      <div className={styles.card} data-aos="fade-up">
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.svg" 
+            alt="Cirqulate Logo" 
+            width={60} 
+            height={60}
+            priority
+          />
+        </div>
         <h1 className={styles.title}>Reset Password</h1>
         
         <div className={styles.progressContainer}>

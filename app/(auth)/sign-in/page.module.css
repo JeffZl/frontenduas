@@ -20,6 +20,13 @@
   box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.2);
 }
 
+/* Logo container */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
 /* Title section */
 .titleSection {
   text-align: center;

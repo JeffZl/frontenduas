@@ -19,6 +19,13 @@
   max-width: 56rem;
 }
 
+/* Logo container */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
 /* Back link */
 .backLink {
   display: inline-block;
