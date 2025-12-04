@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import TweetComponent from "@/components/TweetComponent"
+import styles from "./page.module.css"
 
 interface Tweet {
   _id: string
@@ -66,38 +67,38 @@ export default function HomePage() {
   }
 
   return (
-    <main className="text-white bg-black">
-      <h1 className="p-4 text-xl font-bold border-b border-[#2f3336] sticky top-0 bg-black/80 backdrop-blur-sm z-10">
+    <main className={styles.main}>
+      <h1 className={styles.header}>
         Home
       </h1>
 
       {loading ? (
-        <div className="p-4 space-y-4">
+        <div className={styles.loadingContainer}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse flex gap-3 p-4 border-b border-[#2f3336]">
-              <div className="w-12 h-12 rounded-full bg-gray-700"></div>
-              <div className="flex-1 space-y-3">
-                <div className="h-4 bg-gray-700 rounded w-1/4"></div>
-                <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+            <div key={i} className={styles.loadingItem}>
+              <div className={styles.loadingAvatar}></div>
+              <div className={styles.loadingContent}>
+                <div className={styles.loadingLineShort}></div>
+                <div className={styles.loadingLineLong}></div>
+                <div className={styles.loadingLineMedium}></div>
               </div>
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="p-8 text-center">
-          <p className="text-red-500 mb-4">{error}</p>
+        <div className={styles.errorContainer}>
+          <p className={styles.errorMessage}>{error}</p>
           <button
             onClick={fetchTweets}
-            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
+            className={styles.retryButton}
           >
             Try again
           </button>
         </div>
       ) : tweets.length === 0 ? (
-        <div className="p-8 text-center text-gray-400">
-          <p className="text-xl mb-2">No tweets yet</p>
-          <p className="text-sm">Be the first to tweet!</p>
+        <div className={styles.emptyContainer}>
+          <p className={styles.emptyTitle}>No tweets yet</p>
+          <p className={styles.emptySubtitle}>Be the first to tweet!</p>
         </div>
       ) : (
         <div>
