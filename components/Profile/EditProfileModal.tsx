@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { FiX, FiCamera } from "react-icons/fi"
+import styles from "./EditProfileModal.module.css"
 
 interface EditProfileModalProps {
     isOpen: boolean
@@ -177,67 +178,59 @@ export default function EditProfileModal({ isOpen, onClose, user, onSave }: Edit
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center">
-            {/* Backdrop */}
-            <div 
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={onClose}
-            />
+        <div className={styles.modalOverlay}>
+            <div className={styles.backdrop} onClick={onClose} />
 
-            {/* Modal */}
-            <div className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl overflow-hidden flex flex-col z-10 mx-4">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+            <div className={styles.modal}>
+                <div className={styles.header}>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition"
+                        className={styles.iconButton}
                     >
-                        <FiX className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                        <FiX className={styles.icon} />
                     </button>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit profile</h2>
+                    <h2 className={styles.title}>Edit profile</h2>
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="px-4 py-2 bg-white dark:bg-gray-800 text-black dark:text-white font-semibold rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={styles.saveButton}
                     >
                         {loading ? "Saving..." : "Save"}
                     </button>
                 </div>
 
-                {/* Error message */}
                 {error && (
-                    <div className="px-4 py-2 bg-red-500/10 text-red-500 text-sm">
+                    <div className={styles.errorBanner}>
                         {error}
                     </div>
                 )}
 
-                {/* Scrollable content */}
-                <div className="overflow-y-auto flex-1">
-                    {/* Banner section */}
-                    <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-800">
+                <div className={styles.content}>
+                    <div className={styles.bannerSection}>
                         {bannerPreview ? (
                             <Image
                                 src={bannerPreview}
                                 alt="Banner"
                                 fill
-                                className="object-cover"
+                                sizes="600px"
+                                className={styles.bannerImage}
                             />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500" />
+                            <div className={styles.bannerPlaceholder} />
                         )}
-                        <div className="absolute inset-0 flex items-center justify-center gap-4 bg-black/40 opacity-0 hover:opacity-100 transition">
+                        <div className={styles.bannerOverlay}>
                             <button
                                 onClick={() => bannerInputRef.current?.click()}
-                                className="p-2 bg-black/50 rounded-full hover:bg-black/70 transition"
+                                className={styles.bannerControlButton}
                             >
-                                <FiCamera className="w-5 h-5 text-white" />
+                                <FiCamera className={styles.controlIcon} />
                             </button>
                             {bannerPreview && (
                                 <button
                                     onClick={() => handleRemoveImage("banner")}
-                                    className="p-2 bg-black/50 rounded-full hover:bg-black/70 transition"
+                                    className={styles.bannerControlButton}
                                 >
-                                    <FiX className="w-5 h-5 text-white" />
+                                    <FiX className={styles.controlIcon} />
                                 </button>
                             )}
                         </div>
@@ -246,33 +239,31 @@ export default function EditProfileModal({ isOpen, onClose, user, onSave }: Edit
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleImageUpload(e, "banner")}
-                            className="hidden"
+                            className={styles.hiddenInput}
                         />
                     </div>
 
-                    {/* Profile picture section */}
-                    <div className="relative px-4 -mt-16 mb-4">
-                        <div className="relative w-32 h-32 rounded-full border-4 border-white dark:border-[#1a1a1a] overflow-hidden bg-gray-200 dark:bg-gray-800">
+                    <div className={styles.profileSection}>
+                        <div className={styles.profileImageWrapper}>
                             {profilePicturePreview ? (
                                 <Image
                                     src={profilePicturePreview}
                                     alt="Profile"
                                     fill
-                                    className="object-cover"
+                                    sizes="128px"
+                                    className={styles.profileImage}
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <span className="text-4xl font-bold text-gray-400">
-                                        {formData.name[0]?.toUpperCase() || "?"}
-                                    </span>
+                                <div className={styles.profileInitial}>
+                                    {formData.name[0]?.toUpperCase() || "?"}
                                 </div>
                             )}
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition cursor-pointer">
+                            <div className={styles.profileOverlay}>
                                 <button
                                     onClick={() => profilePictureInputRef.current?.click()}
-                                    className="p-2 bg-black/50 rounded-full hover:bg-black/70 transition"
+                                    className={styles.bannerControlButton}
                                 >
-                                    <FiCamera className="w-5 h-5 text-white" />
+                                    <FiCamera className={styles.controlIcon} />
                                 </button>
                             </div>
                         </div>
@@ -281,94 +272,65 @@ export default function EditProfileModal({ isOpen, onClose, user, onSave }: Edit
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleImageUpload(e, "profile")}
-                            className="hidden"
+                            className={styles.hiddenInput}
                         />
                     </div>
 
-                    {/* Form fields */}
-                    <div className="px-4 pb-4 space-y-4">
-                        {/* Name */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Name
-                            </label>
+                    <div className={styles.form}>
+                        <div className={styles.field}>
+                            <label className={styles.label}>Name</label>
                             <input
                                 type="text"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
                                 maxLength={50}
-                                className="w-full px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className={styles.input}
                                 placeholder="Name"
                             />
                         </div>
 
-                        {/* Bio */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Bio
-                            </label>
+                        <div className={styles.field}>
+                            <label className={styles.label}>Bio</label>
                             <textarea
                                 name="bio"
                                 value={formData.bio}
                                 onChange={handleInputChange}
                                 maxLength={160}
                                 rows={3}
-                                className="w-full px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                className={styles.textarea}
                                 placeholder="Bio"
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
+                            <p className={styles.charCount}>
                                 {formData.bio.length}/160
                             </p>
                         </div>
 
-                        {/* Location */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Location
-                            </label>
-                            <input
-                                type="text"
-                                name="location"
-                                value={formData.location}
-                                onChange={handleInputChange}
-                                maxLength={30}
-                                className="w-full px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Location"
-                            />
-                        </div>
-
-                        {/* Website */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Website
-                            </label>
+                        <div className={styles.field}>
+                            <label className={styles.label}>Website</label>
                             <input
                                 type="text"
                                 name="website"
                                 value={formData.website}
                                 onChange={handleInputChange}
                                 maxLength={100}
-                                className="w-full px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className={styles.input}
                                 placeholder="Website"
                             />
                         </div>
 
-                        {/* Birth date */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Birth date
-                            </label>
-                            <div className="grid grid-cols-3 gap-2">
+                        <div className={styles.field}>
+                            <label className={styles.label}>Birth date</label>
+                            <div className={styles.selectGroup}>
                                 <select
                                     name="month"
                                     value={formData.month}
                                     onChange={handleSelectChange}
-                                    className="px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={styles.select}
                                 >
                                     <option value="">Month</option>
                                     {months.map(month => (
-                                        <option key={month} value={month} className="bg-white dark:bg-[#1a1a1a]">
+                                        <option key={month} value={month}>
                                             {month}
                                         </option>
                                     ))}
@@ -377,11 +339,11 @@ export default function EditProfileModal({ isOpen, onClose, user, onSave }: Edit
                                     name="day"
                                     value={formData.day}
                                     onChange={handleSelectChange}
-                                    className="px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={styles.select}
                                 >
                                     <option value="">Day</option>
                                     {days.map(day => (
-                                        <option key={day} value={day} className="bg-white dark:bg-[#1a1a1a]">
+                                        <option key={day} value={day}>
                                             {day}
                                         </option>
                                     ))}
@@ -390,11 +352,11 @@ export default function EditProfileModal({ isOpen, onClose, user, onSave }: Edit
                                     name="year"
                                     value={formData.year}
                                     onChange={handleSelectChange}
-                                    className="px-4 py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={styles.select}
                                 >
                                     <option value="">Year</option>
                                     {years.map(year => (
-                                        <option key={year} value={year} className="bg-white dark:bg-[#1a1a1a]">
+                                        <option key={year} value={year}>
                                             {year}
                                         </option>
                                     ))}

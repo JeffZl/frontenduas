@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
+import { usePathname } from "next/navigation";
 import Sidebar from "@/components/sidebar";
 import Rightbar from "@/components/Rightbar";
+import styles from "./layout.module.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const hideRightbar = pathname.startsWith("/messages")
+  const pathname = usePathname();
+  const hideRightbar = pathname.startsWith("/messages");
 
   return (
-    <div className="flex justify-center bg-white dark:bg-black text-black dark:text-white max-w-[1200px] mx-auto">
+    <div className={styles.container}>
       <Sidebar />
-      <main className="flex-3">{children}</main>
+      <main className={styles.main}>{children}</main>
       {!hideRightbar && <Rightbar />}
     </div>
   );

@@ -1,0 +1,153 @@
+.tweetArticle {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+.tweetArticle:hover {
+  background-color: var(--color-surface);
+}
+
+.tweetBody {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.avatar {
+  border-radius: 9999px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.avatarFallback {
+  width: 48px;
+  height: 48px;
+  background: var(--skeleton-bg);
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatarFallback span {
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+.tweetContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.tweetHeader {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.name {
+  font-weight: bold;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+}
+
+.handle,
+.time {
+  color: var(--muted-text);
+}
+
+.text {
+  color: var(--foreground);
+  margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
+  white-space: pre-wrap;
+}
+
+.mediaWrapper {
+  margin-bottom: 0.75rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.mediaSingle {
+  position: relative;
+}
+
+.mediaVideo {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  background: black;
+}
+
+.mediaImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+.mediaGridItem {
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+
+.mediaGridImage {
+  object-fit: cover;
+}
+
+.tweetActions {
+  display: flex;
+  justify-content: space-between;
+  max-width: 320px;
+  margin-top: 0.75rem;
+  color: var(--muted-text);
+}
+
+.action {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  color: inherit;
+}
+
+.action:hover {
+  background-color: var(--color-surface);
+}
+
+.reply:hover {
+  color: var(--primary-color);
+}
+
+.retweet:hover {
+  color: #10b981;
+}
+
+.like:hover {
+  color: var(--error-color);
+}
+
+.action.active.like {
+  color: var(--error-color);
+}
+
+.action.active.retweet {
+  color: #10b981;
+}

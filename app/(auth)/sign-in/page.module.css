@@ -1,0 +1,273 @@
+/* Main container */
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+  color: #f3f4f6;
+  padding: 1rem;
+}
+
+/* Card container */
+.card {
+  background-color: #000000;
+  border: 1px solid #1f2937;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 28rem;
+  box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.2);
+}
+
+/* Logo container */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Title section */
+.titleSection {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #9ca3af;
+}
+
+/* Form styles */
+.formGroup {
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+.formGroupLast {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  background-color: #000000;
+  border: 1px solid #374151;
+  color: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.input:focus {
+  border-color: #0ea5e9;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.inputPassword {
+  width: 100%;
+  background-color: #000000;
+  border: 1px solid #374151;
+  color: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  padding-right: 2.5rem;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.inputPassword:focus {
+  border-color: #0ea5e9;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Password input wrapper */
+.passwordWrapper {
+  position: relative;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eyeButton:hover {
+  color: #e5e7eb;
+}
+
+/* Forget password link */
+.forgetPasswordWrapper {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.forgetPasswordLink {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #0ea5e9;
+  text-decoration: none;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.forgetPasswordLink:hover {
+  text-decoration: underline;
+}
+
+/* Error/Success message */
+.message {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin-bottom: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.messageSuccess {
+  color: #22c55e;
+}
+
+.messageError {
+  color: #ef4444;
+}
+
+/* Submit button */
+.submitButton {
+  width: 100%;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  background-color: #0ea5e9;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.submitButton:disabled {
+  background-color: #1f2937;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #000000;
+  border-top-color: transparent;
+  border-radius: 9999px;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dividerLine {
+  flex: 1 1 0%;
+  border-top: 1px solid #374151;
+}
+
+.dividerText {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280;
+}
+
+/* Footer link */
+.footer {
+  text-align: center;
+}
+
+.footerText {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #9ca3af;
+}
+
+.footerLink {
+  color: #0ea5e9;
+  text-decoration: none;
+  font-weight: 600;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+/* Icon visibility */
+.iconHidden {
+  display: none;
+}
+
+.iconVisible {
+  display: block;
+}
+

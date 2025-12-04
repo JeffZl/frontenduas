@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './style.module.css';
 
 interface EditProfileButtonProps {
     onClick: () => void;
@@ -6,11 +7,11 @@ interface EditProfileButtonProps {
 
 export default function EditProfileButton({ onClick }: EditProfileButtonProps) {
     return (
-        <button 
-            className="edit-button"
+        <button
+            className={styles.editProfileButton}
             onClick={onClick}
         >
-            Edit Profile
+            Edit profile
         </button>
     );
 }

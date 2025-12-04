@@ -1,0 +1,139 @@
+.container {
+  padding: 1.25rem;
+  overflow-y: auto;
+  min-height: 100vh;
+  color: black;
+  background-color: white;
+}
+
+:global(.dark) .container {
+  color: white;
+  background-color: black;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: black;
+}
+
+:global(.dark) .title {
+  color: white;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background-color: white;
+  margin-top: 1.25rem;
+}
+
+:global(.dark) .formContainer {
+  border-color: #374151;
+  background-color: black;
+}
+
+.textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-size: 1rem;
+  color: black;
+  outline: none;
+  min-height: 100px;
+}
+
+:global(.dark) .textarea {
+  color: white;
+}
+
+.textarea::placeholder {
+  color: #6b7280;
+}
+
+:global(.dark) .textarea::placeholder {
+  color: #9ca3af;
+}
+
+.uploadButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: fit-content;
+}
+
+.uploadButton:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark) .uploadButton {
+  background-color: #1d9bf0;
+}
+
+:global(.dark) .uploadButton:hover {
+  background-color: #0d8ae8;
+}
+
+.fileInput {
+  display: none;
+}
+
+.previewImage {
+  width: 100%;
+  border-radius: 0.75rem;
+  margin-top: 0.75rem;
+  object-fit: cover;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.successMessage {
+  color: #22c55e;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.submitButton {
+  margin-top: 0.5rem;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  padding: 0.75rem;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #1f2937;
+}
+
+:global(.dark) .submitButton {
+  background-color: white;
+  color: black;
+}
+
+:global(.dark) .submitButton:hover {
+  background-color: #e5e7eb;
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

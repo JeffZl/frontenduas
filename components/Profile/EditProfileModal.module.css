@@ -1,0 +1,283 @@
+image.png.modalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    background: var(--background, #fff);
+    color: var(--foreground, #000);
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+.iconButton {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.iconButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    color: var(--foreground, #000);
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.saveButton {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-weight: 600;
+    background: var(--foreground, #000);
+    color: var(--background, #fff);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.saveButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.errorBanner {
+    padding: 12px 20px;
+    background: rgba(255, 77, 79, 0.15);
+    color: #ff4d4f;
+    font-size: 14px;
+}
+
+.content {
+    overflow-y: auto;
+    padding-bottom: 24px;
+}
+
+.bannerSection {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: #2f3336;
+}
+
+.bannerImage {
+    object-fit: cover;
+}
+
+.bannerPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #6a9df8, #7f5af0);
+}
+
+.bannerOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.bannerSection:hover .bannerOverlay {
+    opacity: 1;
+}
+
+.bannerControlButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.bannerControlButton:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.controlIcon {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+
+.profileSection {
+    position: relative;
+    padding: 0 24px;
+    margin-top: -64px;
+}
+
+.profileImageWrapper {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border: 4px solid var(--background, #fff);
+    overflow: hidden;
+    background: #2f3336;
+}
+
+.profileImage {
+    object-fit: cover;
+}
+
+.profileInitial {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.profileOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.profileImageWrapper:hover .profileOverlay {
+    opacity: 1;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.form {
+    padding: 0 24px;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary, #8899a6);
+    text-transform: uppercase;
+}
+
+.input,
+.textarea,
+.select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(136, 153, 166, 0.4);
+    background: transparent;
+    color: var(--foreground, #fff);
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+    border: 1px solid rgb(29, 155, 240);
+}
+
+.textarea {
+    resize: none;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.charCount {
+    text-align: right;
+    font-size: 12px;
+    color: var(--color-text-secondary, #8899a6);
+}
+
+.selectGroup {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.select option {
+    color: #000;
+}
+
+@media (max-width: 600px) {
+    .modal {
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .form {
+        padding: 0 16px 16px;
+    }
+
+    .profileSection {
+        padding: 0 16px;
+    }
+}
+

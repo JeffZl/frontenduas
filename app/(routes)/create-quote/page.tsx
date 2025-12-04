@@ -2,9 +2,10 @@
 import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { FaImage } from "react-icons/fa";
+import { FaImage } from "react-icons/fa"
+import styles from "./style.module.css"
 
-const page = () => {
+const Page = () => {
   const router = useRouter()
   const [content, setContent] = useState("")
   const [preview, setPreview] = useState<string | null>(null)
@@ -80,31 +81,31 @@ const page = () => {
   }
 
   return (
-    <main className="p-5 overflow-y-auto min-h-screen text-black dark:text-white bg-white dark:bg-black">
-      <h1 className="text-2xl font-bold text-black dark:text-white">Create Quote</h1>
+    <main className={`${styles.container}`}>
+      <h1 className={`${styles.title}`}>Create Quote</h1>
 
-      <div className="flex flex-col gap-4 border border-gray-300 dark:border-gray-800 rounded-2xl p-5 mt-5 bg-white dark:bg-black">
+      <div className={`${styles.formContainer}`}>
         <textarea
           id="quote-text"
           placeholder="Write your quote..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full bg-transparent border-none resize-none text-base text-black dark:text-white outline-none min-h-[100px] placeholder-gray-500 dark:placeholder-gray-400"
+          className={`${styles.textarea}`}
         />
 
-        <div className="flex items-center gap-3">
+        <div className={styles.uploadContainer}>
           <label
             htmlFor="image-upload"
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-[#1d9bf0] dark:hover:bg-[#0d8ae8] text-white px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition"
+            className={`${styles.uploadButton}`}
           >
-            <FaImage className="w-5 h-5" />
+            <FaImage className={styles.uploadIcon} />
             Upload Image
           </label>
           <input
             type="file"
             id="image-upload"
             accept="image/*,video/*"
-            className="hidden"
+            className={styles.fileInput}
             onChange={handleImageUpload}
           />
         </div>
@@ -116,24 +117,24 @@ const page = () => {
               alt="Preview"
               width={600}
               height={400}
-              className="w-full rounded-xl mt-3 object-cover"
+              className={styles.previewImage}
             />
           </div>
         )}
 
         {errorMsg && (
-          <p className="text-red-500 text-sm font-medium">{errorMsg}</p>
+          <p className={styles.errorMessage}>{errorMsg}</p>
         )}
         {successMsg && (
-          <p className="text-green-500 text-sm font-medium">{successMsg}</p>
+          <p className={styles.successMessage}>{successMsg}</p>
         )}
 
         <button
           id="post-btn"
           onClick={handleSubmit}
           disabled={loading}
-          className={`mt-2 bg-black dark:bg-white text-white dark:text-black font-bold py-3 rounded-full transition ${
-            loading ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-800 dark:hover:bg-gray-200"
+          className={`${styles.submitButton} ${
+            loading ? styles.submitButtonDisabled : ""
           }`}
         >
           {loading ? "Posting..." : "Post Quote"}
@@ -143,4 +144,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

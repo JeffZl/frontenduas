@@ -19,7 +19,7 @@ export async function GET(req, { params }) {
 
     const user = await User.findOne({ handle: handle.toLowerCase() })
       .select(
-        "handle name bio profilePicture coverPicture location website birthdate followersCount followingCount tweetsCount likesCount createdAt tweets"
+        "handle name bio profilePicture coverPicture location website birthdate followersCount followingCount tweetsCount likesCount createdAt tweets followers following"
       )
       .lean();
 

@@ -1,219 +1,53 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* :root {
-  --background: #ffffff;
-  --foreground: #171717;
-} */
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --color-border: #e5e7eb;
+    --header-bg: rgba(255, 255, 255, 0.8);
+    --skeleton-bg: #e5e7eb;
+    --error-color: #ef4444;
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --muted-text: #6b7280;
+    --color-surface: #f3f4f6;
+    --color-text-primary: #000000;
+    --color-text-secondary: #6b7280;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000;
-    --foreground: #ededed;
-  }
-} */
+.dark {
+    --background: #000000;
+    --foreground: #ffffff;
+    --color-border: #2f3336;
+    --header-bg: rgba(0, 0, 0, 0.8);
+    --skeleton-bg: #374151;
+    --error-color: #ef4444;
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --muted-text: #9ca3af;
+    --color-surface: #000000;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #9ca3af;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-::-webkit-scrollbar{
-    display:none;
-}
-
-
-/* Penyesuaian agar komponen Anda berada di kolom tengah (Main Content) */
-.profile-main-content {
-    border-left: 1px solid var(--color-border);
-    border-right: 1px solid var(--color-border);
-    /* Lebar konten utama, harus lebih sempit dari kolom */
-    width: 100%; 
-    min-height: 100vh;
-}
-
-.profile-details-section {
-    position: relative;
-}
-
-.profile-picture {
-    
-    position: absolute; 
-    background-color: var(--color-surface); 
-    overflow: hidden; /* Tambahkan ini agar Image Next.js terpotong lingkaran */
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid var(--color-background);
-    top: -60px; /* diangkat setengah tinggi (120px/2 = 60px) */
-    left: 16px;
-    
-    /* FOTO SELALU DI ATAS BANNER */
-    z-index: 100; 
-}
-
-.profile-control {
-    display: flex;
-    justify-content: space-between; /* Memisahkan elemen ke ujung */
-    align-items: center; /* Menjaga vertikal sejajar */
-    padding: 12px;
-    /* Memberikan padding yang cukup di kiri agar tidak menabrak foto profil */
-    padding-left: 470px; 
-    padding-top: 6px; 
-}
-
-/* Tambahkan di sekitar ProfileHeader dan UserBio agar semua di kolom tengah */
-.profile-main-content > div:first-child {
-    padding-bottom: 0; /* Hapus padding yang mungkin mengganggu banner */
-}
-
-
-/* Banner Gambar */
-.profile-banner-image {
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    width: 100%;
-}
-
-/* Header Info (untuk tombol Edit Profile) */
-.profile-header {
-    display: flex;
-    justify-content: flex-start; 
-    margin-top: 10px;
-    padding: 5px 5px 0 24px; /* Padding kiri agar tidak menabrak foto profil */
-    margin-bottom: 10px; /* Memberi ruang agar tidak tumpang tindih dengan foto profil */
-    position: relative;
-}
-
-/* Tombol Edit Profile */
-.edit-button {
-    background-color: var(--background);
+    background: var(--background);
     color: var(--foreground);
-    border: 1px solid var(--foreground);
-    padding: 10px 16px;
-    border-radius: 999px;
-    justify-content: flex-end;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.edit-button:hover {
-    background-color: rgba(103, 96, 96, 0.384);
-}
-
-
-/* Nama Tampilan */
-.display-name {
-    font-size: 1.5em; /* Lebih besar dari handle */
-    font-weight: bold;
-    margin-top: 8px; /* Memberi sedikit jarak dari foto profil */
-}
-
-/* Handle (@jane_doe) */
-.user-handle {
-    color: var(--color-text-secondary);
-    margin-bottom: 10px;
-}
-
-.bio-text {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    line-height: 1.4;
-    white-space: pre-wrap; /* Memastikan spasi dan baris baru terbaca */
-}
-/* Informasi Akun (Born, Joined) */
-.acc-info {
-    display: flex;
-    gap: 15px; /* Jarak antara "Born" dan "Joined" */
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-
-.acc-info p {
-    color: var(--color-text-secondary);
-    font-size: 0.9em;
-}
-
-/* Statistik Follow (Following dan Followers) */
-.follow-stats {
-    display: flex;
-    gap: 20px;
-    font-size: 0.95em;
-}
-
-.stat-item {
-    /* Menggunakan flex untuk menata angka dan teks */
-    display: flex; 
-    gap: 5px;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-}
-
-.stat-item strong {
-    font-weight: bold;
-    color: var(--color-text-primary); /* Angka lebih menonjol */
-}
-
-.stat-item:hover {
-    text-decoration: underline;
-}
-
-.profile-tabs-container {
-    border-top: 1px solid var(--color-border);
-    margin-top: 20px;
-}
-
-.tabs-nav {
-    display: flex;
-    justify-content: space-around;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.tab-button {
-    flex-grow: 1;
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    padding: 15px 0;
-    font-size: 1em;
-    font-weight: bold;
-    cursor: pointer;
-    position: relative;
-    transition: background-color 0.2s;
-}
-
-.tab-button:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-}
-
-.tab-button.active {
-    color: var(--color-text-primary);
-}
-
-/*Indikator Garis Bawah Biru (Active Tab) */
-.tab-button.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 4px;
-    width: 60px;
-    background-color: var(--color-primary);
-    border-radius: 9999px;
-}
-
-.tab-content {
-    padding: 20px 16px;
+::-webkit-scrollbar {
+    display: none;
 }

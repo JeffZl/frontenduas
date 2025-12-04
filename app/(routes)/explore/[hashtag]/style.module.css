@@ -1,0 +1,187 @@
+.container {
+  min-height: 100vh;
+  background-color: white;
+  color: black;
+  border-left: 1px solid #d1d5db;
+  border-right: 1px solid #d1d5db;
+}
+
+:global(.dark) .container {
+  background-color: black;
+  color: white;
+  border-left-color: #2f3336;
+  border-right-color: #2f3336;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  background-opacity: 0.8;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  border-bottom: 1px solid #d1d5db;
+}
+
+:global(.dark) .header {
+  background-color: black;
+  background-opacity: 0.8;
+  border-bottom-color: #2f3336;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.backButton {
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: #f3f4f6;
+}
+
+:global(.dark) .backButton:hover {
+  background-color: #1a1a1a;
+}
+
+.backIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.tweetCount {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+:global(.dark) .tweetCount {
+  color: #9ca3af;
+}
+
+/* Loading States */
+.loadingContainer {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.loadingItem {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.avatarSkeleton {
+  width: 3rem;
+  height: 3rem;
+  background-color: #d1d5db;
+  border-radius: 9999px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  flex-shrink: 0;
+}
+
+:global(.dark) .avatarSkeleton {
+  background-color: #374151;
+}
+
+.contentSkeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeletonRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skeleton {
+  background-color: #d1d5db;
+  border-radius: 0.25rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+:global(.dark) .skeleton {
+  background-color: #374151;
+}
+
+.skeletonSmall {
+  width: 6rem;
+  height: 1rem;
+}
+
+.skeletonMedium {
+  width: 5rem;
+  height: 1rem;
+}
+
+.skeletonLarge {
+  width: 100%;
+  height: 1rem;
+}
+
+.skeletonPartial {
+  width: 75%;
+  height: 1rem;
+}
+
+/* Error States */
+.errorContainer {
+  padding: 2rem;
+  text-align: center;
+}
+
+.errorMessage {
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}
+
+.retryButton {
+  color: #3b82f6;
+  transition: color 0.2s;
+}
+
+.retryButton:hover {
+  text-decoration: underline;
+}
+
+/* Empty States */
+.emptyContainer {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+:global(.dark) .emptyContainer {
+  color: #9ca3af;
+}
+
+.emptyTitle {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.emptySubtitle {
+  font-size: 0.875rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

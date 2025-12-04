@@ -2,12 +2,17 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiEye as EyeOff, FiEyeOff as Eye } from "react-icons/fi";
 import { useRouter } from 'next/navigation';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import styles from './page.module.css';
 
 const SignUpPage = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -29,6 +34,7 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resMessage, setResMessage] = useState("");
   const [isSignUpValid, setIsSignUpValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -45,6 +51,44 @@ const SignUpPage = () => {
   ], []);
 
   const days = useMemo(() => Array.from({ length: 31 }, (_, i) => i + 1), []);
+
+  useEffect(() => {
+    setIsMounted(true);
+    
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-in-out',
+    });
+
+    // Load saved form data from localStorage
+    const savedData = localStorage.getItem('signUpFormData');
+    const savedStep = localStorage.getItem('signUpStep');
+    const savedDay = localStorage.getItem('signUpDay');
+    const savedMonth = localStorage.getItem('signUpMonth');
+    const savedYear = localStorage.getItem('signUpYear');
+
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+    if (savedStep) {
+      setStep(parseInt(savedStep));
+    }
+    if (savedDay) setDay(savedDay);
+    if (savedMonth) setMonth(savedMonth);
+    if (savedYear) setYear(savedYear);
+  }, []);
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('signUpFormData', JSON.stringify(formData));
+      localStorage.setItem('signUpStep', step.toString());
+      localStorage.setItem('signUpDay', day);
+      localStorage.setItem('signUpMonth', month);
+      localStorage.setItem('signUpYear', year);
+    }
+  }, [formData, step, day, month, year, isMounted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -113,8 +157,11 @@ const SignUpPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isStep5Valid) return;
-    console.log(`${baseUrl}/api/auth/sign-up`)
+    if (!isStep5Valid || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    setResMessage("");
+    
     fetch(`/api/auth/sign-up`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -132,25 +179,46 @@ const SignUpPage = () => {
         if (!res.ok) {
           throw new Error(data.error || 'Sign up failed, please try again!');
         }
-        console.log('Sign up success!');
-        setResMessage("Sign Up Success! You will be redirected in 3 seconds");
+        setResMessage("Sign Up Success! Redirecting...");
         setIsSignUpValid(true);
-        setTimeout(() => router.push("/"), 3000);
+        
+        // Clear localStorage after successful sign up
+        localStorage.removeItem('signUpFormData');
+        localStorage.removeItem('signUpStep');
+        localStorage.removeItem('signUpDay');
+        localStorage.removeItem('signUpMonth');
+        localStorage.removeItem('signUpYear');
+        
+        setTimeout(() => router.push("/"), 2000);
       })
       .catch(error => {
         console.error('Error:', error);
         setIsSignUpValid(false);
         setResMessage(error.message || "Sign Up Error, Please try again!");
+        setIsSubmitting(false);
       });
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <main className={`min-h-screen flex items-center justify-center bg-black text-gray-100 p-4`}>
-      <div className="bg-black border border-gray-800 p-8 rounded-xl w-full max-w-md shadow-2xl shadow-sky-900/20">
+    <main className={styles.main}>
+      <div className={styles.card} data-aos="fade-up">
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.svg" 
+            alt="Cirqulate Logo" 
+            width={60} 
+            height={60}
+            priority
+          />
+        </div>
         {/* Update progress indicators to show 5 steps */}
-        <div className="flex justify-center items-center mb-8 space-x-2">
+        <div className={styles.progressContainer}>
           {[1, 2, 3, 4, 5].map((s) => (
-            <div key={s} className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${step >= s ? 'bg-sky-500 text-black font-bold' : 'bg-gray-800 text-gray-500'}`}>
+            <div key={s} className={`${styles.progressStep} ${step >= s ? styles.progressStepActive : styles.progressStepInactive}`}>
               {s}
             </div>
           ))}
@@ -159,11 +227,11 @@ const SignUpPage = () => {
         <form onSubmit={handleSubmit}>
           {/* STEP 1: Name and Email */}
           {step === 1 && (
-            <section className="animate-fade-in">
-              <h2 className="text-2xl font-semibold text-center mb-6">Create Your Account</h2>
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Create Your Account</h2>
               
-              <div className="text-left mb-5">
-                <label htmlFor="name" className="text-xs text-gray-400 mb-1 block">
+              <div className={styles.formGroup}>
+                <label htmlFor="name" className={styles.label}>
                   Name
                 </label>
                 <input 
@@ -173,14 +241,13 @@ const SignUpPage = () => {
                   value={formData.name} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.input} 
                   placeholder="Input your full name" 
-                  suppressHydrationWarning
                 />
               </div>
 
-              <div className="text-left mb-5">
-                <label htmlFor="email" className="text-xs text-gray-400 mb-1 block">
+              <div className={styles.formGroup}>
+                <label htmlFor="email" className={styles.label}>
                   Email
                 </label>
                 <input 
@@ -190,7 +257,7 @@ const SignUpPage = () => {
                   value={formData.email} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.input} 
                   placeholder="Input your email" 
                 />
               </div>
@@ -199,14 +266,14 @@ const SignUpPage = () => {
                 type="button" 
                 onClick={nextStep} 
                 disabled={!isStep1Valid} 
-                className="w-full mt-4 py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black enabled:hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className={styles.buttonWithMargin}
               >
                 Next
               </button>
 
-              <div className="text-center mt-6 text-sm">
-                <span className="text-gray-400">Already Have Account? </span>
-                <Link href="/sign-in" className="text-sky-500 hover:underline font-medium">
+              <div className={styles.footer}>
+                <span className={styles.footerText}>Already Have Account? </span>
+                <Link href="/sign-in" className={styles.footerLink}>
                   Sign-In
                 </Link>
               </div>
@@ -215,23 +282,23 @@ const SignUpPage = () => {
           
           {/* STEP 2: Date of Birth */}
           {step === 2 && (
-            <section className="animate-fade-in">
-              <h2 className="text-2xl font-semibold text-center mb-6">Verify Your Age</h2>
-              <p className="text-sm text-gray-400 mb-6 text-justify">
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Verify Your Age</h2>
+              <p className={styles.sectionDescriptionCenter}>
                 This information will not be displayed publicly. It is used to verify your age.
               </p>
 
-              <div className="flex gap-3 mb-4">
-                <div className="flex-1 text-left">
+              <div className={styles.dobGrid}>
+                <div className={styles.dobItem}>
                  
-                  <label htmlFor="day" className="text-xs text-gray-400 mb-1 block">
+                  <label htmlFor="day" className={styles.label}>
                     Day
                   </label>
                   <select
                     id="day"
                     value={day}
                     onChange={(e) => setDay(e.target.value)}
-                    className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 appearance-none focus:border-sky-500 focus:outline-none"
+                    className={styles.select}
                   >
                    
                     <option value="" disabled>Day</option>
@@ -241,16 +308,16 @@ const SignUpPage = () => {
                   </select>
                 </div>
 
-                <div className="flex-1 text-left">
+                <div className={styles.dobItem}>
                  
-                  <label htmlFor="month" className="text-xs text-gray-400 mb-1 block">
+                  <label htmlFor="month" className={styles.label}>
                     Month
                   </label>
                   <select
                     id="month"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                    className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 appearance-none focus:border-sky-500 focus:outline-none"
+                    className={styles.select}
                   >
                    
                     <option value="" disabled>Month</option>
@@ -260,16 +327,16 @@ const SignUpPage = () => {
                   </select>
                 </div>
 
-                <div className="flex-1 text-left">
+                <div className={styles.dobItem}>
                  
-                  <label htmlFor="year" className="text-xs text-gray-400 mb-1 block">
+                  <label htmlFor="year" className={styles.label}>
                     Year
                   </label>
                   <select
                     id="year"
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 appearance-none focus:border-sky-500 focus:outline-none"
+                    className={styles.select}
                   >
                     
                     <option value="" disabled>Year</option>
@@ -280,15 +347,15 @@ const SignUpPage = () => {
                 </div>
               </div>
 
-              <div className={`text-sm mb-5 h-5 flex items-center justify-center ${isDobValid ? "text-green-500" : "text-red-500"}`}>
+              <div className={`${styles.ageMessage} ${isDobValid ? styles.ageMessageValid : styles.ageMessageInvalid}`}>
                 {ageMessage}
               </div>
 
-              <div className="flex gap-4">
+              <div className={styles.buttonGroup}>
                 <button 
                   type="button" 
                   onClick={prevStep} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-gray-700 text-gray-100 hover:bg-gray-600"
+                  className={`${styles.button} ${styles.buttonSecondary}`}
                 >
                  
                   Back
@@ -297,7 +364,7 @@ const SignUpPage = () => {
                   type="button" 
                   onClick={nextStep} 
                   disabled={!isStep2Valid} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black enabled:hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  className={`${styles.button} ${styles.buttonPrimary}`}
                 >
                   
                   Next
@@ -308,15 +375,15 @@ const SignUpPage = () => {
           
           {/* STEP 3: Password */}
           {step === 3 && (
-            <section className="animate-fade-in">
+            <section className={styles.section}>
               
-              <h2 className="text-2xl font-semibold text-center mb-6">Account Security</h2>
+              <h2 className={styles.sectionTitle}>Account Security</h2>
               
-              <div className="text-left mb-4">
-                <label htmlFor="password" className="text-xs text-gray-400 mb-1 block">
+              <div className={styles.formGroupMedium}>
+                <label htmlFor="password" className={styles.label}>
                   Password
                 </label>
-                <div className="relative">
+                <div className={styles.passwordWrapper}>
                   <input 
                     id="password" 
                     name="password" 
@@ -324,13 +391,13 @@ const SignUpPage = () => {
                     value={formData.password} 
                     onChange={handleChange} 
                     required 
-                    className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 pr-10 focus:border-sky-500 focus:outline-none transition-colors" 
+                    className={styles.inputPassword} 
                     placeholder="Create a strong password" 
                   />
                   <button 
                     type="button" 
                     onClick={() => setShowPassword(!showPassword)} 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                    className={styles.eyeButton}
                   >
                     
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -338,19 +405,19 @@ const SignUpPage = () => {
                 </div>
               </div>
               
-              <ul className="text-sm mb-5 space-y-1 text-gray-400">
+              <ul className={styles.passwordValidation}>
                 
-                <li className={passwordValidation.length ? 'text-green-500' : ''}>At least 8 characters</li>
-                <li className={passwordValidation.uppercase ? 'text-green-500' : ''}>Contains an uppercase letter</li>
-                <li className={passwordValidation.number ? 'text-green-500' : ''}>Contains a number</li>
+                <li className={passwordValidation.length ? styles.passwordValidationValid : ''}>At least 8 characters</li>
+                <li className={passwordValidation.uppercase ? styles.passwordValidationValid : ''}>Contains an uppercase letter</li>
+                <li className={passwordValidation.number ? styles.passwordValidationValid : ''}>Contains a number</li>
               </ul>
               
-              <div className="text-left mb-2">
+              <div className={styles.formGroup}>
                
-                <label htmlFor="confirmPassword" className="text-xs text-gray-400 mb-1 block">
+                <label htmlFor="confirmPassword" className={styles.label}>
                   Confirm Password
                 </label>
-                <div className="relative">
+                <div className={styles.passwordWrapper}>
                   <input 
                     id="confirmPassword" 
                     name="confirmPassword" 
@@ -358,14 +425,14 @@ const SignUpPage = () => {
                     value={formData.confirmPassword} 
                     onChange={handleChange} 
                     required 
-                    className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 pr-10 focus:border-sky-500 focus:outline-none transition-colors" 
+                    className={styles.inputPassword} 
                     
                     placeholder="Re-type your password" 
                   />
                   <button 
                     type="button" 
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                    className={styles.eyeButton}
                   >
                     
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -375,29 +442,29 @@ const SignUpPage = () => {
               
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
                 
-                <p className="text-red-500 text-sm mt-1 mb-4">Passwords do not match.</p>
+                <p className={styles.errorMessage}>Passwords do not match.</p>
               )}
               
-              <div className="flex items-center gap-2 my-6 text-sm">
+              <div className={styles.checkboxContainer}>
                 <input 
                   type="checkbox" 
                   id="termsAccepted" 
                   name="termsAccepted" 
                   checked={formData.termsAccepted} 
                   onChange={handleChange} 
-                  className="w-4 h-4 accent-sky-500" 
+                  className={styles.checkbox} 
                 />
                 
                 <label htmlFor="termsAccepted">
-                  I agree to the <a href="/terms" className="text-sky-500 hover:underline">Terms & Conditions</a>
+                  I agree to the <a href="/terms" className={styles.checkboxLink}>Terms & Conditions</a>
                 </label>
               </div>
               
-              <div className="flex gap-4">
+              <div className={styles.buttonGroup}>
                 <button 
                   type="button" 
                   onClick={prevStep} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-gray-700 text-gray-100 hover:bg-gray-600"
+                  className={`${styles.button} ${styles.buttonSecondary}`}
                 >
                   Back
                 </button>
@@ -405,7 +472,7 @@ const SignUpPage = () => {
                   type="button" 
                   onClick={nextStep} 
                   disabled={!isStep3Valid} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black enabled:hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  className={`${styles.button} ${styles.buttonPrimary}`}
                 >
                   Next
                 </button>
@@ -415,12 +482,12 @@ const SignUpPage = () => {
           
           {/* STEP 4: Username */}
           {step === 4 && (
-            <section className="animate-fade-in">
+            <section className={styles.section}>
               
-              <h2 className="text-2xl font-semibold text-center mb-6">Choose a Username</h2>
+              <h2 className={styles.sectionTitle}>Choose a Username</h2>
               
-              <div className="text-left mb-6">
-                <label htmlFor="username" className="text-xs text-gray-400 mb-1 block">
+              <div className={styles.formGroupLarge}>
+                <label htmlFor="username" className={styles.label}>
                   Username
                 </label>
                 <input 
@@ -430,16 +497,16 @@ const SignUpPage = () => {
                   value={formData.username} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.input} 
                   placeholder="Choose a unique username" 
                 />
               </div>
 
-              <div className="flex gap-4">
+              <div className={styles.buttonGroup}>
                 <button 
                   type="button" 
                   onClick={prevStep} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-gray-700 text-gray-100 hover:bg-gray-600"
+                  className={`${styles.button} ${styles.buttonSecondary}`}
                 >
                   Back
                 </button>
@@ -447,7 +514,7 @@ const SignUpPage = () => {
                   type="button" 
                   onClick={nextStep} 
                   disabled={!isStep4Valid} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black enabled:hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  className={`${styles.button} ${styles.buttonPrimary}`}
                 >
                   
                   Next
@@ -458,17 +525,17 @@ const SignUpPage = () => {
           
           {/* STEP 5: Secret Words */}
           {step === 5 && (
-            <section className="animate-fade-in">
+            <section className={styles.section}>
              
-              <h2 className="text-2xl font-semibold text-center mb-6">Secret Words</h2>
-              <p className="text-sm text-gray-400 mb-6 text-center">
+              <h2 className={styles.sectionTitle}>Secret Words</h2>
+              <p className={styles.sectionDescriptionCenter}>
                 Enter 2 secret words that will be used for password reset.
               </p>
 
               {/* First Secret Word */}
-              <div className="text-left mb-4">
+              <div className={styles.formGroupMedium}>
                 
-                <label htmlFor="secretWord1" className="text-xs text-gray-400 mb-1 block">
+                <label htmlFor="secretWord1" className={styles.label}>
                   Secret Word 1
                 </label>
                 <input 
@@ -478,15 +545,15 @@ const SignUpPage = () => {
                   value={formData.secretWord1} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.input} 
                   placeholder="Enter your first secret word" 
                 />
               </div>
 
               {/* Second Secret Word */}
-              <div className="text-left mb-6">
+              <div className={styles.formGroupLarge}>
                 
-                <label htmlFor="secretWord2" className="text-xs text-gray-400 mb-1 block">
+                <label htmlFor="secretWord2" className={styles.label}>
                   Secret Word 2
                 </label>
                 <input 
@@ -496,34 +563,44 @@ const SignUpPage = () => {
                   value={formData.secretWord2} 
                   onChange={handleChange} 
                   required 
-                  className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+                  className={styles.input} 
                   placeholder="Enter your second secret word" 
                 />
               </div>
 
               {formData.secretWord1 && formData.secretWord2 && formData.secretWord1 === formData.secretWord2 && (
                 
-                <p className="text-red-500 text-sm mb-4">Secret words must be different.</p>
+                <p className={styles.errorMessage}>Secret words must be different.</p>
               )}
 
-              <div className={`text-sm mb-5 h-5 flex items-center justify-center ${isSignUpValid ? "text-green-500" : "text-red-500"}`}>
-                {resMessage}
-              </div>
+              {resMessage && (
+                <div className={`${styles.responseMessage} ${isSignUpValid ? styles.responseMessageSuccess : styles.responseMessageError}`}>
+                  {resMessage}
+                </div>
+              )}
               
-              <div className="flex gap-4">
+              <div className={styles.buttonGroup}>
                 <button 
                   type="button" 
                   onClick={prevStep} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-gray-700 text-gray-100 hover:bg-gray-600"
+                  className={`${styles.button} ${styles.buttonSecondary}`}
+                  disabled={isSubmitting}
                 >
                   Back
                 </button>
                 <button 
                   type="submit" 
-                  disabled={!isStep5Valid} 
-                  className="w-full py-3 rounded-lg font-semibold transition-all bg-green-500 text-black enabled:hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  disabled={!isStep5Valid || isSubmitting} 
+                  className={`${styles.button} ${styles.buttonSuccess}`}
                 >
-                  Sign Up
+                  {isSubmitting ? (
+                    <div className={styles.loadingContainer}>
+                      <div className={styles.spinner}></div>
+                      Signing Up...
+                    </div>
+                  ) : (
+                    'Sign Up'
+                  )}
                 </button>
               </div>
             </section>

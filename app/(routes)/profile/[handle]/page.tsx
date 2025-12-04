@@ -2,13 +2,14 @@
 import React from "react"
 import ProfileHeader from "@/components/Profile/ProfileHeader"
 import UserBio from "@/components/Profile/UserBio"
-import ProfileTabs from "@/components/Profile/ProfileTabs"
+import ProfileTabs, { ProfileTab } from "@/components/Profile/ProfileTabs"
 import EditProfileButton from "@/components/Profile/EditProfile"
 import EditProfileModal from "@/components/Profile/EditProfileModal"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import TweetComponent from "@/components/TweetComponent"
 import { useRouter } from "next/navigation"
+import styles from "./style.module.css"
 
 interface Tweet {
     _id: string
@@ -24,7 +25,7 @@ interface Tweet {
         handle: string
         name: string
         profilePicture?: {
-        url: string
+            url: string
         }
     }
     likesCount: number
@@ -33,7 +34,6 @@ interface Tweet {
     createdAt: string
     originalTweet?: Tweet
 }
-
 
 interface User {
     _id: string;
@@ -48,6 +48,9 @@ interface User {
     followersCount: number;
     followingCount: number;
     tweetsCount: number;
+    likesCount?: number;
+    followers?: Array<string>;
+    following?: Array<string>;
     createdAt: string;
     tweets?: Tweet[];
 }
@@ -56,11 +59,20 @@ const Page = ({ params }: { params: Promise<{ handle: string }> }) => {
     const [user, setUser] = useState<User | null>(null);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [profileHandle, setProfileHandle] = useState("");
+    const [activeTab, setActiveTab] = useState<ProfileTab>("Posts");
+    const [likedTweets, setLikedTweets] = useState<Tweet[]>([]);
+    const [likedLoading, setLikedLoading] = useState(false);
+    const [likedError, setLikedError] = useState<string | null>(null);
+    const [hasFetchedLikes, setHasFetchedLikes] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const fetchData = async () => {
             const { handle } = await params
+            setProfileHandle(handle)
             
             // Fetch profile user
             try {
@@ -96,7 +108,109 @@ const Page = ({ params }: { params: Promise<{ handle: string }> }) => {
         fetchData();
     }, [params]);
 
+    useEffect(() => {
+        setActiveTab("Posts");
+        setLikedTweets([]);
+        setLikedError(null);
+        setHasFetchedLikes(false);
+    }, [profileHandle]);
+
+    useEffect(() => {
+        if (!user || !currentUser?._id) return;
+
+        const followerIds = (user.followers || []).map((id) => id?.toString());
+        setIsFollowing(followerIds.includes(currentUser._id));
+    }, [user, currentUser]);
+
     const isOwnProfile = currentUser?.handle?.toLowerCase() === user?.handle?.toLowerCase();
+
+    const fetchLikedTweets = async (handleValue: string) => {
+        if (!handleValue) return;
+        setLikedLoading(true);
+        setLikedError(null);
+
+        try {
+            const res = await fetch(`/api/user/${handleValue}/likes`, {
+                cache: "no-store",
+                credentials: "include",
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || "Failed to fetch liked posts");
+            }
+
+            const { tweets } = await res.json();
+            const filtered = (tweets || []).filter(
+                (tweet: Tweet | null): tweet is Tweet =>
+                    Boolean(tweet && tweet.author && tweet.author.handle)
+            );
+            setLikedTweets(filtered);
+            setHasFetchedLikes(true);
+        } catch (error) {
+            console.error("Error fetching liked tweets:", error);
+            setLikedError(error instanceof Error ? error.message : "Failed to fetch liked posts");
+        } finally {
+            setLikedLoading(false);
+        }
+    };
+
+    const handleTabChange = (tab: ProfileTab) => {
+        setActiveTab(tab);
+        if (tab === "Likes" && !hasFetchedLikes && profileHandle) {
+            fetchLikedTweets(profileHandle);
+        }
+    };
+
+    const handleToggleFollow = async () => {
+        if (!user || !currentUser?._id || followLoading) return;
+
+        setFollowLoading(true);
+        const willFollow = !isFollowing;
+
+        try {
+            const res = await fetch(`/api/user/${user.handle}/follow`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ currentUserId: currentUser._id }),
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || "Failed to update follow status");
+            }
+
+            setIsFollowing(willFollow);
+            setUser((prev) => {
+                if (!prev) return prev;
+                const followerSet = new Set((prev.followers || []).map((id) => id?.toString()));
+                if (willFollow) {
+                    followerSet.add(currentUser._id);
+                } else {
+                    followerSet.delete(currentUser._id);
+                }
+
+                return {
+                    ...prev,
+                    followersCount: Math.max(0, prev.followersCount + (willFollow ? 1 : -1)),
+                    followers: Array.from(followerSet),
+                };
+            });
+            setCurrentUser((prev) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    followingCount: Math.max(0, prev.followingCount + (willFollow ? 1 : -1)),
+                };
+            });
+        } catch (error) {
+            console.error("Error updating follow status:", error);
+        } finally {
+            setFollowLoading(false);
+        }
+    };
 
     const handleSaveProfile = async (updateData: Record<string, unknown>) => {
         if (!user) return;
@@ -140,103 +254,138 @@ const Page = ({ params }: { params: Promise<{ handle: string }> }) => {
         });
     };
 
+    const formatJoinDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric"
+        });
+    };
+
     return (
-        <div className="profile-main-content overflow-scroll max-h-[100vh] [&::-webkit-scrollbar]:hidden">
+        <div className={styles.profileContainer}>
             {/* Profile Header */}
-            <ProfileHeader name={user?.name || ""} />
+            <ProfileHeader name={user?.name || ""} tweetsCount={user?.tweetsCount} />
 
             {/* Banner */}
-            {user?.coverPicture?.url ? (
-                <Image
-                    src={user.coverPicture.url}
-                    alt="Banner Image"
-                    width={600}
-                    height={200}
-                    className="profile-banner-image"
-                />
-            ) : (
-                <Image
-                    src="/icons/banner.jpg"
-                    alt="Banner Image"
-                    width={600}
-                    height={200}
-                    className="profile-banner-image"
-                />
-            )}
+            <div className={styles.bannerContainer}>
+                {user?.coverPicture?.url ? (
+                    <Image
+                        src={user.coverPicture.url}
+                        alt="Banner"
+                        fill
+                        className={styles.bannerImage}
+                        sizes="600px"
+                        priority
+                    />
+                ) : (
+                    <Image
+                        src="/icons/banner.jpg"
+                        alt="Banner"
+                        fill
+                        className={styles.bannerImage}
+                        sizes="600px"
+                        priority
+                    />
+                )}
+            </div>
 
-            {/* Profile details */}
-            <div className="profile-details-section">
-                <div>   
-                    {user?.profilePicture?.url ? (
-                        <Image
-                            src={user?.profilePicture?.url}
-                            alt="Profile Picture"
-                            width={120}
-                            height={120}
-                            className="absolute bg-[var(--color-surface)] overflow-hidden w-[120px] h-[120px] rounded-full border-[4px] border-[var(--color-background)] top-[-60px] left-4 z-[100]"
-                        />
-                    ) : (
-                        <div className="absolute w-[120px] h-[120px] flex items-center justify-center rounded-full bg-gray-700 border-[4px] border-[var(--color-background)] top-[-60px] left-4 z-[100]">
-                            <span className="text-white font-bold text-4xl">
-                            {user?.name?.[0]?.toUpperCase() || "?"}
-                            </span>
-                        </div>
-                    )}
+            {/* Profile Info */}
+            <div className={styles.profileInfo}>
+                <div className={styles.profileTopSection}>
+                    {/* Profile Picture - Overlapping Banner */}
+                    <div className={styles.profilePictureContainer}>
+                        {user?.profilePicture?.url ? (
+                            <Image
+                                src={user.profilePicture.url}
+                                alt="Profile"
+                                width={140}
+                                height={140}
+                                className={styles.profilePicture}
+                            />
+                        ) : (
+                            <div className={styles.profilePictureFallback}>
+                                {user?.name?.[0]?.toUpperCase() || "?"}
+                            </div>
+                        )}
+                    </div>
 
+                    <div className={styles.profileActions}>
+                        {isOwnProfile ? (
+                            <EditProfileButton onClick={() => setIsEditModalOpen(true)} />
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleToggleFollow}
+                                className={`${styles.followButton} ${isFollowing ? styles.following : ""}`}
+                                disabled={followLoading}
+                            >
+                                {isFollowing ? "Following" : "Follow"}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-                {isOwnProfile && (
-                    <div className="profile-control">
-                        <EditProfileButton onClick={() => setIsEditModalOpen(true)} />
-                    </div>
-                )}
-
+                {/* User Details */}
                 {user && (
                     <UserBio
                         name={user.name}
                         handle={user.handle}
                         bio={user.bio}
                         birthDate={formatBirthDate(user.birthdate)}
-                        joinDate={user.createdAt ? new Date(user.createdAt).toLocaleString("en-GB", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                        }) : ""}
+                        joinDate={user.createdAt ? formatJoinDate(user.createdAt) : ""}
                         followingCount={user.followingCount}
                         followersCount={user.followersCount}
                         location={user.location}
                         website={user.website}
                     />
                 )}
-
-                {/* Edit Profile Modal */}
-                {isEditModalOpen && (
-                    <EditProfileModal
-                        isOpen={isEditModalOpen}
-                        onClose={() => setIsEditModalOpen(false)}
-                        user={user}
-                        onSave={handleSaveProfile}
-                    />
-                )}
-
-                <ProfileTabs />
             </div>
 
-            {/* ✅ Tweet feed */}
-            <div className="mt-6">
-                {user && user.tweetsCount > 0 && user.tweets ? (
-                    user.tweets.map((tweet: Tweet) => {
-                        console.log(tweet)
-                        return(
-                        <TweetComponent key={tweet._id} tweet={tweet} />
-                    )})
-                ) : (
-                    <div className="p-4 text-center text-gray-400">
-                        No tweets yet
-                    </div>
-                )}
+            {/* Edit Profile Modal */}
+            {isEditModalOpen && (
+                <EditProfileModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    user={user}
+                    onSave={handleSaveProfile}
+                />
+            )}
+
+            {/* Tabs */}
+            <ProfileTabs activeTab={activeTab} onChange={handleTabChange} />
+
+            {/* Tweets */}
+            <div className={styles.tweetsContainer}>
+                {activeTab === "Likes" && likedLoading ? (
+                    <div className={styles.noTweets}>Loading likes...</div>
+                ) : (() => {
+                    const sourceTweets =
+                        activeTab === "Likes" ? likedTweets : user?.tweets || [];
+                    if (sourceTweets.length === 0) {
+                        return (
+                            <div className={styles.noTweets}>
+                                {activeTab === "Likes"
+                                    ? likedError || "No liked posts yet"
+                                    : "No posts yet"}
+                            </div>
+                        );
+                    }
+
+                    return sourceTweets
+                        .filter((tweet: Tweet | null): tweet is Tweet =>
+                            Boolean(tweet && tweet.author && tweet.author.handle)
+                        )
+                        .map((tweet: Tweet, index: number) => {
+                            const key =
+                                tweet._id ||
+                                `${tweet.createdAt}-${tweet.author?.handle || "unknown"}-${index}`;
+                            return <TweetComponent key={key} tweet={tweet} />;
+                        });
+                })()}
             </div>
         </div>
     );
 }
+
 export default Page

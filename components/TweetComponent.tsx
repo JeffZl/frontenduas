@@ -1,104 +1,159 @@
 'use client'
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { FiHeart, FiMessageCircle, FiRepeat } from "react-icons/fi"
+import styles from "./TweetComponent.module.css"
 
 interface tweetInterface {
-  _id: string
-  content?: string
-  media?: Array<{
-    url: string
-    mediaType: string
-    thumbnail?: string
-    altText?: string
-  }>
-  author: {
     _id: string
-    handle: string
-    name: string
-    profilePicture?: {
-      url: string
+    content?: string
+    media?: Array<{
+        url: string
+        mediaType: string
+        thumbnail?: string
+        altText?: string
+    }>
+    author: {
+        _id: string
+        handle: string
+        name: string
+        profilePicture?: { url: string }
     }
-  }
-  likesCount: number
-  retweetsCount: number
-  repliesCount: number
-  createdAt: string
-  originalTweet?: tweetInterface
+    likesCount?: number
+    retweetsCount?: number
+    repliesCount?: number
+    createdAt: string
+    originalTweet?: tweetInterface
+    isLiked?: boolean
+    isRetweeted?: boolean
 }
 
-const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
-    console.log(tweet)
+const TweetComponent = ({ tweet: initialTweet }: { tweet: tweetInterface }) => {
+    const router = useRouter()
+    const [tweet, setTweet] = useState(initialTweet)
+    const [isLiked, setIsLiked] = useState(tweet.isLiked || false)
+    const [isRetweeted, setIsRetweeted] = useState(tweet.isRetweeted || false)
+
     const formatTime = (dateString: string) => {
         const date = new Date(dateString)
         const now = new Date()
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+        const diff = Math.floor((now.getTime() - date.getTime()) / 1000)
 
-        if (diffInSeconds < 60) return `${diffInSeconds}s`
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
-        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`
-        
+        if (diff < 60) return `${diff}s`
+        if (diff < 3600) return `${Math.floor(diff / 60)}m`
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h`
+        if (diff < 604800) return `${Math.floor(diff / 86400)}d`
+
         return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
     }
 
+    const handleTweetClick = (e: React.MouseEvent) => {
+        // Don't navigate if clicking on links, buttons, or interactive elements
+        const target = e.target as HTMLElement
+        if (
+            target.tagName === 'A' ||
+            target.tagName === 'BUTTON' ||
+            target.closest('a') ||
+            target.closest('button')
+        ) {
+            return
+        }
+        router.push(`/post/${tweet._id}`)
+    }
+
+    const handleLike = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        try {
+            const res = await fetch(`/api/post/${tweet._id}/like`, {
+                method: "POST",
+                credentials: "include",
+            })
+
+            if (res.ok) {
+                const data = await res.json()
+                setIsLiked(data.isLiked)
+                setTweet({
+                    ...tweet,
+                    likesCount: data.likesCount,
+                })
+            }
+        } catch (err) {
+            console.error("Failed to toggle like:", err)
+        }
+    }
+
+    const handleRetweet = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        try {
+            const res = await fetch(`/api/post/${tweet._id}/retweet`, {
+                method: "POST",
+                credentials: "include",
+            })
+
+            if (res.ok) {
+                const data = await res.json()
+                setIsRetweeted(data.isRetweeted)
+                setTweet({
+                    ...tweet,
+                    retweetsCount: data.retweetsCount,
+                })
+            }
+        } catch (err) {
+            console.error("Failed to toggle retweet:", err)
+        }
+    }
+
+    const handleComment = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        router.push(`/post/${tweet._id}`)
+    }
+
     return (
-            <article
-            key={tweet._id}
-            className="p-4 border-b border-gray-300 dark:border-[#2f3336] hover:bg-gray-50 dark:hover:bg-[#0a0a0a] transition-colors"
-        >
-            
-            <div className="flex gap-3">
-                <Link href={`/profile/${tweet.author.handle}`}>
+        <article className={styles.tweetArticle} onClick={handleTweetClick} style={{ cursor: 'pointer' }}>
+            <div className={styles.tweetBody}>
+                <Link href={`/profile/${tweet.author.handle}`} onClick={(e) => e.stopPropagation()}>
                     {tweet.author.profilePicture?.url ? (
-                            <Image
-                                src={tweet.author.profilePicture.url}
-                                alt={tweet.author.name}
-                                width={48}
-                                height={48}
-                                className="rounded-full object-cover shrink-0 cursor-pointer"
-                            />
-                        ) : (
-                            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0 cursor-pointer">
-                                <span className="text-black dark:text-white font-bold text-lg">
-                                {tweet.author.name?.[0]?.toUpperCase() || "?"}
-                                </span>
-                            </div>
+                        <Image
+                            src={tweet.author.profilePicture.url}
+                            alt={tweet.author.name}
+                            width={48}
+                            height={48}
+                            className={styles.avatar}
+                        />
+                    ) : (
+                        <div className={styles.avatarFallback}>
+                            <span>{tweet.author.name?.[0]?.toUpperCase() || "?"}</span>
+                        </div>
                     )}
                 </Link>
 
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Link href={`/profile/${tweet.author.handle}`}>
-                            <span className="font-bold text-black dark:text-white hover:underline">
+                <div className={styles.tweetContent}>
+                    <div className={styles.tweetHeader}>
+                        <Link href={`/profile/${tweet.author.handle}`} className={styles.name} onClick={(e) => e.stopPropagation()}>
                             {tweet.author.name}
-                            </span>
                         </Link>
-                        <span className="text-gray-500 dark:text-gray-400">
-                            @{tweet.author.handle}
-                        </span>
-                        <span className="text-gray-500 dark:text-gray-400">·</span>
-                        <span className="text-gray-500 dark:text-gray-400">
-                            {formatTime(tweet.createdAt)}
-                        </span>
+                        <span className={styles.handle}>@{tweet.author.handle}</span>
+                        <span>·</span>
+                        <span className={styles.time}>{formatTime(tweet.createdAt)}</span>
                     </div>
 
                     {tweet.content && (
-                        <p className="text-black dark:text-white mb-3 whitespace-pre-wrap wrap-break-words">
-                            {tweet.content}
-                        </p>
+                        <p className={styles.text}>{tweet.content}</p>
                     )}
 
                     {tweet.media && tweet.media.length > 0 && (
-                        <div className="mb-3 rounded-2xl overflow-hidden">
+                        <div className={styles.mediaWrapper}>
                             {tweet.media.length === 1 ? (
-                                <div className="relative">
+                                <div className={styles.mediaSingle}>
                                     {tweet.media[0].mediaType === "video" ? (
                                         <video
                                             src={tweet.media[0].url}
                                             controls
-                                            className="w-full max-h-[500px] object-contain bg-black"
+                                            className={styles.mediaVideo}
                                             poster={tweet.media[0].thumbnail}
+                                            onClick={(e) => e.stopPropagation()}
                                         />
                                     ) : (
                                         <Image
@@ -106,48 +161,58 @@ const TweetComponent = ({ tweet }: { tweet: tweetInterface }) => {
                                             alt={tweet.media[0].altText || "Tweet media"}
                                             width={600}
                                             height={400}
-                                            className="w-full h-auto object-contain"
+                                            className={styles.mediaImage}
                                         />
                                     )}
-                            </div>
+                                </div>
                             ) : (
-                                <div className="grid grid-cols-2 gap-1">
-                                    {tweet.media.slice(0, 4).map((media, idx) => (
-                                    <div key={idx} className="relative aspect-square">
-                                        {media.mediaType === "video" ? (
-                                            <video
-                                                src={media.url}
-                                                controls
-                                                className="w-full h-full object-cover"
-                                                poster={media.thumbnail}
-                                            />
-                                        ) : (
-                                            <Image
-                                                src={media.url}
-                                                alt={media.altText || `Media ${idx + 1}`}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        )}
-                                    </div>
+                                <div className={styles.mediaGrid}>
+                                    {tweet.media.slice(0, 4).map((m, idx) => (
+                                        <div key={idx} className={styles.mediaGridItem}>
+                                            {m.mediaType === "video" ? (
+                                                <video
+                                                    src={m.url}
+                                                    controls
+                                                    className={styles.mediaVideo}
+                                                    poster={m.thumbnail}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src={m.url}
+                                                    alt={m.altText || `Media ${idx + 1}`}
+                                                    fill
+                                                    className={styles.mediaGridImage}
+                                                />
+                                            )}
+                                        </div>
                                     ))}
                                 </div>
-                                )}
-                            </div>
-                        )}
+                            )}
+                        </div>
+                    )}
 
-                    <div className="flex items-center gap-8 mt-3 text-gray-500 dark:text-gray-400 justify-between max-w-md">
-                        <button className="flex items-center gap-2 hover:text-blue-500 transition-colors">
-                            <FiMessageCircle className="w-5 h-5" />
-                            <span className="text-sm">{tweet.repliesCount || 0}</span>
+                    <div className={styles.tweetActions}>
+                        <button
+                            className={`${styles.action} ${styles.reply}`}
+                            onClick={handleComment}
+                        >
+                            <FiMessageCircle />
+                            <span>{tweet.repliesCount || 0}</span>
                         </button>
-                        <button className="flex items-center gap-2 hover:text-green-500 transition-colors">
-                            <FiRepeat className="w-5 h-5" />
-                            <span className="text-sm">{tweet.retweetsCount || 0}</span>
+                        <button
+                            className={`${styles.action} ${styles.retweet} ${isRetweeted ? styles.active : ''}`}
+                            onClick={handleRetweet}
+                        >
+                            <FiRepeat />
+                            <span>{tweet.retweetsCount || 0}</span>
                         </button>
-                        <button className="flex items-center gap-2 hover:text-red-500 transition-colors">
-                            <FiHeart className="w-5 h-5" />
-                            <span className="text-sm">{tweet.likesCount || 0}</span>
+                        <button
+                            className={`${styles.action} ${styles.like} ${isLiked ? styles.active : ''}`}
+                            onClick={handleLike}
+                        >
+                            <FiHeart />
+                            <span>{tweet.likesCount || 0}</span>
                         </button>
                     </div>
                 </div>

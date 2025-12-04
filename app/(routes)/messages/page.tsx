@@ -3,9 +3,11 @@
 import SearchComponent from "@/components/SearchComponent";
 import SearchResult from "@/components/SearchResult";
 import Image from "next/image"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { IoMdArrowBack } from "react-icons/io";
+
+import styles from "./style.module.css"
 
 interface Conversation {
   _id: string
@@ -66,24 +68,25 @@ export default function MessagesPage() {
   const [messageInput, setMessageInput] = useState("")
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [currentUser, setCurrentUser] = useState<{ _id: string; handle: string } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showSearch, setShowSearch] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchUser[]>([])
   const [searching, setSearching] = useState(false)
   const [showConversationsList, setShowConversationsList] = useState(true)
+  const previousConversationsRef = useRef<Conversation[]>([])
 
   useEffect(() => {
     fetchCurrentUser()
     fetchConversations()
-    
+
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setShowConversationsList(true)
       }
     }
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -107,7 +110,7 @@ export default function MessagesPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  // looping tiap 3 detik buat tau ada chat terbaru
+  // looping tiap 3 detik buat tau ada chat terbaru di conversation yang dipilih
   useEffect(() => {
     if (!selectedConversation) return
 
@@ -145,21 +148,62 @@ export default function MessagesPage() {
     }
   }
 
-  const fetchConversations = async () => {
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return "now"
+    if (diffMins < 60) return `${diffMins}m`
+    if (diffHours < 24) return `${diffHours}h`
+    if (diffDays < 7) return `${diffDays}d`
+    return date.toLocaleDateString()
+  }
+
+
+  const fetchConversations = useCallback(async (silent = false) => {
     try {
       const res = await fetch("/api/conversations", {
         credentials: "include",
       })
       if (res.ok) {
         const data = await res.json()
-        setConversations(data.conversations || [])
+        const newConversations = data.conversations || []
+
+        setConversations(newConversations)
+        previousConversationsRef.current = newConversations
       }
     } catch (error) {
-      console.error("Error fetching conversations:", error)
+      if (!silent) {
+        console.error("Error fetching conversations:", error)
+      }
     } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      }
     }
-  }
+  }, [])
+
+  // Poll untuk semua conversations untuk detect new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations(true) // silent fetch
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [fetchConversations])
+
+  // Poll untuk semua conversations untuk detect new messages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations(true) // silent fetch
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [fetchConversations])
 
   const fetchMessages = async (conversationId: string, silent = false) => {
     try {
@@ -221,21 +265,6 @@ export default function MessagesPage() {
     }
   }
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return "now"
-    if (diffMins < 60) return `${diffMins}m`
-    if (diffHours < 24) return `${diffHours}h`
-    if (diffDays < 7) return `${diffDays}d`
-    return date.toLocaleDateString()
-  }
-
   const getInitial = (name?: string) => {
     return name?.[0]?.toUpperCase() || "?"
   }
@@ -280,9 +309,9 @@ export default function MessagesPage() {
           lastMessageAt: data.conversation.lastMessageAt,
         }
         setSelectedConversation(newConversation)
-        
+
         await fetchConversations()
-        
+
         setShowSearch(false)
         setSearchQuery("")
         setSearchResults([])
@@ -294,23 +323,24 @@ export default function MessagesPage() {
     }
   }
 
+
   return (
-    <div className="flex h-screen bg-white dark:bg-black text-black dark:text-white relative">
-      {/* main section buat list conversation */}
+    <div className={styles.container}>
+      {/* Conversations List Section */}
       <div
-        className={`${
-          showConversationsList ? "flex" : "hidden"
-        } md:flex w-full md:w-96 border-r border-gray-300 dark:border-[#2f3336] flex-col absolute md:relative inset-0 z-10 md:z-auto bg-white dark:bg-black`}
+        className={`${styles.conversationsList} ${
+          showConversationsList ? styles.show : styles.hide
+        }`}
       >
-        <div className="p-4 border-b border-gray-300 dark:border-[#2f3336]">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-black dark:text-white">Messages</h1>
+        <div className={styles.conversationsHeader}>
+          <div className={styles.headerTop}>
+            <h1 className={styles.title}>Messages</h1>
             <button
               onClick={() => setShowSearch(!showSearch)}
-              className="text-black dark:text-white bg-gray-100 dark:bg-[#202327] hover:bg-gray-200 dark:hover:bg-[#2f3336] rounded-full p-2 transition"
+              className={styles.searchButton}
               title="Search users"
             >
-              <FiSearch className="w-5 h-5" />
+              <FiSearch className={styles.searchIcon} />
             </button>
           </div>
           {showSearch && (
@@ -320,27 +350,26 @@ export default function MessagesPage() {
 
         {/* Search Results */}
         {showSearch && searchQuery && (
-          <div className="border-b border-gray-300 dark:border-[#2f3336] max-h-96 overflow-y-auto">
+          <div className={styles.searchResults}>
             {searching ? (
-              <div className="p-4 space-y-3">
+              <div className={styles.loadingSkeleton}>
                 {[1, 2].map((i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                    <div className="flex-1">
-                      <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                      <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+                  <div key={i} className={styles.skeletonItem}>
+                    <div className={styles.skeletonAvatar} />
+                    <div className={styles.skeletonText}>
+                      <div className={styles.skeletonName} />
+                      <div className={styles.skeletonHandle} />
                     </div>
                   </div>
                 ))}
               </div>
             ) : searchResults.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <p className="text-sm">No users found</p>
+              <div className={styles.noResults}>
+                <p>No users found</p>
               </div>
             ) : (
-              <div className="p-2">
+              <div className={styles.resultsList}>
                 {searchResults.map((user, i) => (
-                  // limit nampilin 3 user aja
                   i < 3 && <SearchResult key={user._id} user={user} mode="conversation" handleStartConversation={handleStartConversation} setShowConversationsList={setShowConversationsList} />
                 ))}
               </div>
@@ -348,23 +377,23 @@ export default function MessagesPage() {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className={styles.conversationsContent}>
           {loading ? (
-            <div className="p-4 space-y-3">
+            <div className={styles.loadingSkeleton}>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3 p-3">
-                  <div className="w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse" />
-                  <div className="flex-1">
-                    <div className="w-24 h-4 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                    <div className="w-32 h-3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+                <div key={i} className={styles.conversationSkeleton}>
+                  <div className={styles.skeletonAvatarLarge} />
+                  <div className={styles.skeletonText}>
+                    <div className={styles.skeletonName} />
+                    <div className={styles.skeletonMessage} />
                   </div>
                 </div>
               ))}
             </div>
           ) : conversations.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className={styles.emptyState}>
               <p>No conversations yet</p>
-              <p className="text-sm mt-2">Start a conversation from a user's profile</p>
+              <p>Start a conversation from a user's profile</p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -372,13 +401,12 @@ export default function MessagesPage() {
                 key={conv._id}
                 onClick={() => {
                   setSelectedConversation(conv)
-                  // On mobile, hide conversations list when selecting
                   if (window.innerWidth < 768) {
                     setShowConversationsList(false)
                   }
                 }}
-                className={`w-full flex items-center gap-3 p-3 md:p-4 hover:bg-gray-100 dark:hover:bg-[#0f0f0f] transition ${
-                  selectedConversation?._id === conv._id ? "bg-gray-100 dark:bg-[#0f0f0f]" : ""
+                className={`${styles.conversationItem} ${
+                  selectedConversation?._id === conv._id ? styles.active : ""
                 }`}
               >
                 {conv.participant.profilePicture?.url ? (
@@ -387,32 +415,32 @@ export default function MessagesPage() {
                     alt={conv.participant.name}
                     width={48}
                     height={48}
-                    className="rounded-full object-cover shrink-0"
+                    className={styles.avatar}
                   />
                 ) : (
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                    <span className="text-black dark:text-white font-bold text-lg">
+                  <div className={styles.avatarPlaceholder}>
+                    <span className={styles.avatarInitial}>
                       {getInitial(conv.participant.name)}
                     </span>
                   </div>
                 )}
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold truncate text-black dark:text-white">{conv.participant.name}</span>
+                <div className={styles.conversationInfo}>
+                  <div className={styles.conversationHeader}>
+                    <span className={styles.conversationName}>{conv.participant.name}</span>
                     {conv.lastMessage && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0">
+                      <span className={styles.timeStamp}>
                         {formatTime(conv.lastMessageAt)}
                       </span>
                     )}
                   </div>
                   {conv.lastMessage ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    <p className={styles.lastMessage}>
                       {conv.lastMessage.sender.handle === currentUser?.handle
                         ? `You: ${conv.lastMessage.content}`
                         : conv.lastMessage.content}
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">No messages yet</p>
+                    <p className={styles.lastMessage}>No messages yet</p>
                   )}
                 </div>
               </button>
@@ -421,22 +449,21 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* right section message */}
-      <div className="flex-1 flex flex-col w-full md:w-auto pb-20 md:pb-0">
+      {/* Messages Section */}
+      <div className={styles.messagesSection}>
         {selectedConversation ? (
           <>
-            {/* header conversation */}
-            <div className="p-3 md:p-4 border-b border-gray-300 dark:border-[#2f3336] flex items-center gap-3 bg-white dark:bg-black">
-              {/* button buat balik di mobile */}
+            {/* Conversation Header */}
+            <div className={styles.messagesHeader}>
               <button
                 onClick={() => {
                   setSelectedConversation(null)
                   setShowConversationsList(true)
                 }}
-                className="md:hidden text-black dark:text-white hover:bg-gray-100 dark:hover:bg-[#2f3336] rounded-full p-2 transition -ml-2"
+                className={styles.backButton}
                 aria-label="Back to conversations"
               >
-                <IoMdArrowBack className="w-5 h-5" />
+                <IoMdArrowBack className={styles.backIcon} />
               </button>
               {selectedConversation.participant.profilePicture?.url ? (
                 <Image
@@ -444,29 +471,31 @@ export default function MessagesPage() {
                   alt={selectedConversation.participant.name}
                   width={40}
                   height={40}
-                  className="rounded-full object-cover"
+                  className={styles.messageAvatar}
                 />
               ) : (
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
-                  <span className="text-black dark:text-white font-bold">
+                <div className={styles.messageAvatarPlaceholder}>
+                  <span className={styles.messageAvatarInitial}>
                     {getInitial(selectedConversation.participant.name)}
                   </span>
                 </div>
               )}
-              <div>
-                <h2 className="font-bold text-black dark:text-white">{selectedConversation.participant.name}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">@{selectedConversation.participant.handle}</p>
+              <div className={styles.messageUserInfo}>
+                <h2 className={styles.messageUserName}>{selectedConversation.participant.name}</h2>
+                <p className={styles.messageUserHandle}>@{selectedConversation.participant.handle}</p>
               </div>
             </div>
 
-            {/* section message sesama user */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-4 pb-24 md:pb-4 bg-white dark:bg-black">
+            {/* Messages */}
+            <div className={styles.messagesContainer}>
               {messages.map((message) => {
                 const isOwnMessage = message.sender._id === currentUser?._id
                 return (
                   <div
                     key={message._id}
-                    className={`flex gap-3 ${isOwnMessage ? "justify-end" : ""}`}
+                    className={`${styles.messageWrapper} ${
+                      isOwnMessage ? styles.ownMessage : ""
+                    }`}
                   >
                     {!isOwnMessage && (
                       <>
@@ -476,45 +505,45 @@ export default function MessagesPage() {
                             alt={message.sender.name}
                             width={40}
                             height={40}
-                            className="rounded-full object-cover shrink-0"
+                            className={styles.messageAvatarSmall}
                           />
                         ) : (
-                          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 shrink-0">
-                            <span className="text-black dark:text-white font-bold text-sm">
+                          <div className={styles.messageAvatarSmallPlaceholder}>
+                            <span className={styles.messageAvatarSmallInitial}>
                               {getInitial(message.sender.name)}
                             </span>
                           </div>
                         )}
                       </>
                     )}
-                    <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isOwnMessage ? "items-end" : ""}`}>
+                    <div className={`${styles.messageContent} ${
+                      isOwnMessage ? styles.ownMessageContent : ""
+                    }`}>
                       {!isOwnMessage && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <span className={styles.messageMeta}>
                           {message.sender.name} · {formatTime(message.createdAt)}
                         </span>
                       )}
                       {isOwnMessage && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <span className={styles.messageMeta}>
                           {formatTime(message.createdAt)}
                         </span>
                       )}
                       <div
-                        className={`rounded-2xl px-4 py-2 ${
-                          isOwnMessage
-                            ? "bg-gray-200 dark:bg-white text-black"
-                            : "bg-gray-100 dark:bg-[#202327] text-black dark:text-white"
+                        className={`${styles.messageBubble} ${
+                          isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
                         }`}
                       >
-                        <p className="text-[15px]">{message.content}</p>
+                        <p className={styles.messageText}>{message.content}</p>
                         {message.media && message.media.length > 0 && (
-                          <div className="mt-2">
+                          <div className={styles.messageMedia}>
                             {message.media[0].mediaType === "image" && (
                               <Image
                                 src={message.media[0].url}
                                 alt="Message media"
                                 width={300}
                                 height={200}
-                                className="rounded-lg object-cover"
+                                className={styles.mediaImage}
                               />
                             )}
                           </div>
@@ -527,39 +556,38 @@ export default function MessagesPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* chat input */}
+            {/* Message Input */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 md:p-4 border-t border-gray-300 dark:border-[#2f3336] flex gap-2 md:gap-3 bg-white dark:bg-black"
+              className={styles.messageForm}
             >
               <input
                 type="text"
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="Start a message"
-                className="flex-1 bg-gray-100 dark:bg-[#202327] text-black dark:text-white px-3 md:px-4 py-2 rounded-full outline-none placeholder-gray-500 dark:placeholder-gray-400 text-sm md:text-base"
+                className={styles.messageInput}
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={!messageInput.trim() || sending}
-                className="bg-black dark:bg-white text-white dark:text-black font-bold px-4 md:px-6 py-2 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                className={styles.sendButton}
               >
                 {sending ? "Sending..." : "Send"}
               </button>
             </form>
           </>
         ) : (
-          // kalo belom ada message
-          <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 p-4 bg-white dark:bg-black">
-            <div className="text-center">
-              <p className="text-xl mb-2">Select a conversation</p>
-              <p className="text-sm">Choose a conversation from the list to start messaging</p>
+          // Empty State
+          <div className={styles.emptyMessages}>
+            <div className={styles.emptyMessagesContent}>
+              <p className={styles.emptyMessagesTitle}>Select a conversation</p>
+              <p className={styles.emptyMessagesSubtitle}>Choose a conversation from the list to start messaging</p>
             </div>
           </div>
         )}
       </div>
-
     </div>
   )
 }

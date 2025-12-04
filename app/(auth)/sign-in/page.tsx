@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiEye as EyeOff, FiEyeOff as Eye } from "react-icons/fi"
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import styles from './page.module.css';
 
 const SignInPage = () => {
   const router = useRouter()
@@ -15,6 +19,14 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("")
   const [isSignInValid, setIsSignInValid] = useState(false)
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-in-out',
+    });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,28 +53,36 @@ const SignInPage = () => {
     }
 
     setIsSignInValid(true)
-    setError("Sign In Success! Redirecting in 3 seconds.")
-    setIsLoading(false)
-    setTimeout(() => router.push("/"), 3000);
+    setError("Sign In Success! Redirecting...")
+    setTimeout(() => router.push("/"), 2000);
   };
 
 
   const isFormValid = formData.email.trim() !== '' && formData.password.trim() !== '';
 
   return (
-    <main className={`min-h-screen flex items-center justify-center bg-black text-gray-100 p-4`}>
-      <div className="bg-black border border-gray-800 p-8 rounded-xl w-full max-w-md shadow-2xl shadow-sky-900/20">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold mb-2">Sign-In To Your Account</h1>
-          <p className="text-sm text-gray-400">
+    <main className={styles.main}>
+      <div className={styles.card} data-aos="fade-up">
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.svg" 
+            alt="Cirqulate Logo" 
+            width={60} 
+            height={60}
+            priority
+          />
+        </div>
+        <div className={styles.titleSection}>
+          <h1 className={styles.title}>Sign-In To Your Account</h1>
+          <p className={styles.description}>
            Welcome back! Please log in with your account.
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           
-          <div className="text-left mb-5">
-            <label htmlFor="email" className="text-xs text-gray-400 mb-1 block">
+          <div className={styles.formGroup}>
+            <label htmlFor="email" className={styles.label}>
               Email
             </label>
             <input 
@@ -72,18 +92,18 @@ const SignInPage = () => {
               value={formData.email} 
               onChange={handleChange} 
               required 
-              className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 focus:border-sky-500 focus:outline-none transition-colors" 
+              className={styles.input} 
               placeholder="Input your email" 
               suppressHydrationWarning
             />
           </div>
 
           {/* Input Password */}
-          <div className="text-left mb-6">
-            <label htmlFor="password" className="text-xs text-gray-400 mb-1 block">
+          <div className={styles.formGroupLast}>
+            <label htmlFor="password" className={styles.label}>
               Password
             </label>
-            <div className="relative">
+            <div className={styles.passwordWrapper}>
               <input 
                 id="password" 
                 name="password" 
@@ -91,33 +111,33 @@ const SignInPage = () => {
                 value={formData.password} 
                 onChange={handleChange} 
                 required 
-                className="w-full bg-black border border-gray-700 text-gray-100 rounded-lg p-3 pr-10 focus:border-sky-500 focus:outline-none transition-colors" 
+                className={styles.inputPassword} 
                 placeholder="Input your password" 
                 suppressHydrationWarning
               />
               <button 
                 type="button" 
                 onClick={() => setShowPassword(!showPassword)} 
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+                className={styles.eyeButton}
                 suppressHydrationWarning
               >
-                <Eye size={20} className={showPassword ? 'hidden' : 'block'}/>
-                <EyeOff size={20} className={showPassword ? 'block' : 'hidden'}/>
+                <Eye size={20} className={showPassword ? styles.iconHidden : styles.iconVisible}/>
+                <EyeOff size={20} className={showPassword ? styles.iconVisible : styles.iconHidden}/>
               </button>
             </div>
           </div>
 
           {/* Lupa Password */}
-          <div className="text-right mb-6">
+          <div className={styles.forgetPasswordWrapper}>
             <Link 
               href="/reset-password" 
-              className="text-sm text-sky-500 hover:underline transition-colors"
+              className={styles.forgetPasswordLink}
             >
               Forget Password?
             </Link>
           </div>
 
-          <div className={`text-sm mb-5 h-5 flex items-center justify-center ${isSignInValid ? "text-green-500" : "text-red-500"}`}>
+          <div className={`${styles.message} ${isSignInValid ? styles.messageSuccess : styles.messageError}`}>
             {error}
           </div>
 
@@ -125,11 +145,11 @@ const SignInPage = () => {
           <button 
             type="submit" 
             disabled={!isFormValid || isLoading}
-            className="w-full py-3 rounded-lg font-semibold transition-all bg-sky-500 text-black enabled:hover:opacity-90 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed mb-4"
+            className={styles.submitButton}
           >
             {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
+              <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
                 Loading...
               </div>
             ) : (
@@ -138,19 +158,19 @@ const SignInPage = () => {
           </button>
 
          
-          <div className="flex items-center mb-4">
-            <div className="flex-1 border-t border-gray-700"></div>
-            <span className="px-3 text-sm text-gray-500">atau</span>
-            <div className="flex-1 border-t border-gray-700"></div>
+          <div className={styles.divider}>
+            <div className={styles.dividerLine}></div>
+            <span className={styles.dividerText}>atau</span>
+            <div className={styles.dividerLine}></div>
           </div>
 
           {/* Link ke Sign Up */}
-          <div className="text-center">
-            <p className="text-sm text-gray-400">
+          <div className={styles.footer}>
+            <p className={styles.footerText}>
               Don't have an account?{' '}
               <Link 
                 href="/sign-up" 
-                className="text-sky-500 hover:underline font-semibold transition-colors"
+                className={styles.footerLink}
               >
                 Sign Here
               </Link>
