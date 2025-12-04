@@ -1,6 +1,7 @@
 import { connectToDB } from "@/lib/mongodb"
 import User from "@/models/User"
 import Tweet from "@/models/Tweet"
+import cloudinary from "@/lib/cloudinary"
 
 
 export async function GET(req, { params }) {
@@ -18,7 +19,7 @@ export async function GET(req, { params }) {
 
     const user = await User.findOne({ handle: handle.toLowerCase() })
       .select(
-        "handle name bio profilePicture coverPicture followersCount followingCount tweetsCount likesCount createdAt tweets"
+        "handle name bio profilePicture coverPicture location website birthdate followersCount followingCount tweetsCount likesCount createdAt tweets followers following"
       )
       .lean();
 
@@ -45,28 +46,57 @@ export async function GET(req, { params }) {
   }
 }
 
+async function uploadToCloudinary(base64, folder) {
+  const uploadResponse = await cloudinary.uploader.upload(base64, {
+    resource_type: "image",
+    folder: folder,
+  })
+
+  return {
+    url: uploadResponse.secure_url,
+    publicId: uploadResponse.public_id,
+    format: uploadResponse.format,
+  }
+}
+
 export async function PUT(request, { params }) {
   try {
     await connectToDB()
 
     const body = await request.json()
-    const { handle } = params
+    const { handle } = await params
 
     if (!handle) return Response.json({ error: "Missing handle" }, { status: 400 })
 
-    const allowedFields = [
-      "name",
-      "bio",
-      "location",
-      "website",
-      "birthdate",
-      "profilePicture",
-      "coverPicture",
-    ]
-
     const updates = {}
-    for (const field of allowedFields) {
-      if (body[field] !== undefined) updates[field] = body[field]
+
+    // Handle text fields
+    if (body.name !== undefined) updates.name = body.name
+    if (body.bio !== undefined) updates.bio = body.bio
+    if (body.location !== undefined) updates.location = body.location
+    if (body.website !== undefined) updates.website = body.website
+    if (body.birthdate !== undefined) updates.birthdate = body.birthdate
+
+    // Handle profile picture upload
+    if (body.profilePicture && body.profilePicture.base64) {
+      try {
+        const uploadResult = await uploadToCloudinary(body.profilePicture.base64, "profile_pictures")
+        updates.profilePicture = uploadResult
+      } catch (error) {
+        console.error("Error uploading profile picture:", error)
+        return Response.json({ error: "Failed to upload profile picture" }, { status: 500 })
+      }
+    }
+
+    // Handle cover picture upload
+    if (body.coverPicture && body.coverPicture.base64) {
+      try {
+        const uploadResult = await uploadToCloudinary(body.coverPicture.base64, "cover_pictures")
+        updates.coverPicture = uploadResult
+      } catch (error) {
+        console.error("Error uploading cover picture:", error)
+        return Response.json({ error: "Failed to upload cover picture" }, { status: 500 })
+      }
     }
 
     if (Object.keys(updates).length === 0) {

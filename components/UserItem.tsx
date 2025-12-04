@@ -5,12 +5,20 @@ import styles from "./UserItem.module.css";
 interface User {
     name: string;
     handle: string;
-    avatar?: string | null;
+    avatar?: string;
+    isFollowing?: boolean;
+    onToggleFollow?: () => void;
 }
 
-const UserItem = ({ name, handle, avatar }: User) => {
+const UserItem = ({ name, handle, avatar, isFollowing = false, onToggleFollow }: User) => {
     const getInitial = (name?: string) => {
         return name?.[0]?.toUpperCase() || "?";
+    };
+
+    const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onToggleFollow?.();
     };
 
     return (
@@ -38,8 +46,12 @@ const UserItem = ({ name, handle, avatar }: User) => {
                     </div>
                 </div>
 
-                <button className={styles.followBtn}>
-                    Follow
+                <button
+                    className={`${styles.followBtn} ${isFollowing ? styles.following : ""}`}
+                    onClick={handleButtonClick}
+                    type="button"
+                >
+                    {isFollowing ? "Following" : "Follow"}
                 </button>
             </div>
         </Link>

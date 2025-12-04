@@ -1,30 +1,29 @@
 'use client'
-import React, {useState} from 'react';
+import React from 'react';
+import styles from './style.module.css';
 
-const tabs: string[] = ['Posts', 'Likes'];
+const tabs = ['Posts', 'Likes'] as const;
 
-export default function ProfileTabs(){
-    const [activeTab, setActiveTab] = useState<string>('Posts')
+export type ProfileTab = typeof tabs[number];
 
-    const handleTabClick = (tabName: string, event: React.MouseEvent<HTMLButtonElement>) => {
-        setActiveTab(tabName);
-        console.log(`tab clicked:${tabName}`);
-    }
+interface ProfileTabsProps {
+    activeTab: ProfileTab;
+    onChange: (tab: ProfileTab) => void;
+}
 
+export default function ProfileTabs({ activeTab, onChange }: ProfileTabsProps) {
     return (
-        <div className="profile-tabs-container">
-            <nav className="tabs-nav">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab}
-                        className={`tab-button ${activeTab === tab ? 'active' : ''}`}
-                        onClick={(e) => handleTabClick(tab, e)}>
-                            {tab}
-                    </button>
-                ))}
-            </nav>
-
-            
+        <div className={styles.tabsContainer}>
+            {tabs.map((tab) => (
+                <button
+                    key={tab}
+                    className={`${styles.tab} ${activeTab === tab ? styles.active : ''}`}
+                    onClick={() => onChange(tab)}
+                    type="button"
+                >
+                    {tab}
+                </button>
+            ))}
         </div>
-    )
+    );
 }
