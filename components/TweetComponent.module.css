@@ -89,6 +89,7 @@
 .text {
   color: black;
   margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
   white-space: pre-wrap;
 }
 
