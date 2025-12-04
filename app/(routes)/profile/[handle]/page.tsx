@@ -28,9 +28,9 @@ interface Tweet {
             url: string
         }
     }
-    likesCount: number
-    retweetsCount: number
-    repliesCount: number
+    likesCount?: number
+    retweetsCount?: number
+    repliesCount?: number
     createdAt: string
     originalTweet?: Tweet
 }
