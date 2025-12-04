@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { FaPlus } from "react-icons/fa";
 import { PiSignOut } from "react-icons/pi";
+import styles from "./page.module.css";
 
 type ThemePreference = "dark" | "light";
 
@@ -22,7 +23,6 @@ export default function SettingsPage() {
   if (!mounted) return null;
 
   const currentTheme =  theme || "dark";
-  const isLightMode = currentTheme === "light";
 
   // useEffect(() => {
   //   localStorage.setItem("notifications", notificationsEnabled ? "on" : "off");
@@ -43,39 +43,23 @@ export default function SettingsPage() {
   };
 
   return (
-    <div
-      className={`min-h-screen border-x border-gray-300 dark:border-[#2f3336] ${
-        isLightMode ? "bg-white text-black" : "bg-black text-white"
-      }`}
-    >
-      <header
-        className={`sticky top-0 z-10 border-b border-gray-300 dark:border-[#2f3336] px-6 py-4 backdrop-blur ${
-          isLightMode ? "bg-white/90" : "bg-black/80"
-        }`}
-      >
-        <h1 className="text-xl font-bold">Settings</h1>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.headerTitle}>Settings</h1>
       </header>
 
-      <div className="space-y-6 px-6 py-8">
-        <section
-          className={`rounded-2xl p-6 shadow-lg ${
-            isLightMode ? "bg-zinc-100 shadow-zinc-300/60" : "bg-[#0f0f0f] shadow-black/30"
-          }`}
-        >
-          <h2 className="text-lg font-semibold text-sky-500">Appearance</h2>
-          <div
-            className={`mt-4 flex items-center justify-between rounded-xl p-4 ${
-              isLightMode ? "bg-white" : "bg-[#16181c]"
-            }`}
-          >
-            <div>
-              <p className="font-medium">Theme</p>
-              <p className={`text-sm ${isLightMode ? "text-zinc-600" : "text-zinc-400"}`}>
+      <div className={styles.content}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Appearance</h2>
+          <div className={styles.settingItem}>
+            <div className={styles.settingInfo}>
+              <p className={styles.settingLabel}>Theme</p>
+              <p className={styles.settingDescription}>
                 Toggle between light and dark modes.
               </p>
             </div>
 
-            <label className="relative inline-flex h-7 w-12 cursor-pointer items-center">
+            <label className={styles.toggleWrapper}>
               <input
                 type="checkbox"
                 checked={currentTheme === "dark"}
@@ -84,79 +68,55 @@ export default function SettingsPage() {
                   setTheme(newTheme);
                   console.log("Theme changed to:", newTheme);
                 }}
-                className="peer sr-only"
+                className={styles.toggleInput}
               />
-              <span
-                className={`absolute inset-0 rounded-full transition ${
-                  isLightMode ? "bg-zinc-300" : "bg-zinc-600"
-                } peer-checked:bg-sky-500`}
-              />
-              <span className="absolute left-1 h-5 w-5 rounded-full bg-white transition peer-checked:translate-x-5" />
+              <span className={styles.toggleTrack} />
+              <span className={styles.toggleThumb} />
             </label>
           </div>
         </section>
 
-        <section
-          className={`rounded-2xl p-6 shadow-lg ${
-            isLightMode ? "bg-zinc-100 shadow-zinc-300/60" : "bg-[#0f0f0f] shadow-black/30"
-          }`}
-        >
-          <h2 className="text-lg font-semibold text-sky-500">Notifications</h2>
-          <div
-            className={`mt-4 flex items-center justify-between rounded-xl p-4 ${
-              isLightMode ? "bg-white" : "bg-[#16181c]"
-            }`}
-          >
-            <div>
-              <p className="font-medium">Enable Notifications</p>
-              <p className={`text-sm ${isLightMode ? "text-zinc-600" : "text-zinc-400"}`}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Notifications</h2>
+          <div className={styles.settingItem}>
+            <div className={styles.settingInfo}>
+              <p className={styles.settingLabel}>Enable Notifications</p>
+              <p className={styles.settingDescription}>
                 Receive alerts for new activity and messages.
               </p>
             </div>
 
-            <label className="relative inline-flex h-7 w-12 cursor-pointer items-center">
+            <label className={styles.toggleWrapper}>
               <input
                 type="checkbox"
                 checked={notificationsEnabled}
                 onChange={(event) => setNotificationsEnabled(event.target.checked)}
-                className="peer sr-only"
+                className={styles.toggleInput}
               />
-              <span
-                className={`absolute inset-0 rounded-full transition ${
-                  isLightMode ? "bg-zinc-300" : "bg-zinc-600"
-                } peer-checked:bg-sky-500`}
-              />
-              <span className="absolute left-1 h-5 w-5 rounded-full bg-white transition peer-checked:translate-x-5" />
+              <span className={styles.toggleTrack} />
+              <span className={styles.toggleThumb} />
             </label>
           </div>
         </section>
 
-        <section
-          className={`rounded-2xl p-6 shadow-lg ${
-            isLightMode ? "bg-zinc-100 shadow-zinc-300/60" : "bg-[#0f0f0f] shadow-black/30"
-          }`}
-        >
-          <h2 className="text-lg font-semibold text-sky-500">Account</h2>
-          <div className="mt-4 space-y-4">
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Account</h2>
+          <div className={styles.accountActions}>
             <button
               type="button"
               onClick={() => router.push("/landing-page")}
-              className={`flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 font-semibold transition ${
-                isLightMode
-                  ? "border-sky-500 text-sky-500 hover:bg-sky-500/10"
-                  : "border-sky-500 text-sky-500 hover:bg-sky-500/10"
-              }`}
+              className={styles.addAccountButton}
             >
-              <span className="text-lg"><FaPlus /></span>
+              <span className={styles.addAccountButtonIcon}><FaPlus /></span>
               <span>Add Account</span>
             </button>
 
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-red-600 px-5 py-3 font-semibold text-white transition hover:bg-red-500"
+              className={styles.logoutButton}
             >
-              <span className="text-lg"><PiSignOut /></span>
+              <span className={styles.logoutButtonIcon}><PiSignOut /></span>
               <span>Log Out</span>
             </button>
           </div>
