@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cirqulate
+
+Cirqulate is a modern social media application built with Next.js 16, designed to connect users through posts, trends, and real-time messaging.
+
+## Features
+
+- **User Authentication**: Secure login and registration system.
+- **Posts & Quotes**: Create, share, and interact with posts (Tweets) and quotes.
+- **Explore & Trends**: Discover trending topics and new content.
+- **Real-time Messaging**: Chat with other users through conversations and messages.
+- **Notifications**: Stay updated with interactions and activities.
+- **User Profiles**: Customizable profiles to showcase your identity.
+- **Settings**: Manage your account preferences.
+- **Responsive Design**: Optimized for various devices.
+- **Dark/Light Mode**: Themed interface for better user experience.
+
+## Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Database**: [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
+- **Styling**: CSS Modules & Vanilla CSS
+- **Authentication**: Custom implementation using `bcrypt`, `jose`, and `jsonwebtoken`
+- **Image Storage**: [Cloudinary](https://cloudinary.com/)
+- **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (v20 or higher recommended)
+- MongoDB instance (Local or Atlas)
+- Cloudinary Account
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd frontenduas
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. Configure Environment Variables:
+   Create a `.env` file in the root directory and add the necessary variables (example):
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+   NEXT_PUBLIC_CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   JWT_SECRET=your_jwt_secret
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/`: Next.js App Router pages and API routes.
+  - `(auth)/`: Authentication routes (login, register).
+  - `(routes)/`: Main application routes (feed, profile, messages, etc.).
+  - `api/`: Backend API endpoints.
+- `components/`: Reusable UI components.
+- `lib/`: Utility functions and configurations.
+- `models/`: Mongoose database models.
+- `public/`: Static assets.
