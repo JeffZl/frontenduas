@@ -30,7 +30,7 @@ export async function GET() {
 
         const user = await User.findById(decoded.id)
             .select(
-                "handle name bio profilePicture coverPicture email followersCount followingCount tweetsCount likesCount createdAt"
+                "handle name bio profilePicture coverPicture email followersCount followingCount tweetsCount likesCount createdAt following"
             )
             .lean()
 
